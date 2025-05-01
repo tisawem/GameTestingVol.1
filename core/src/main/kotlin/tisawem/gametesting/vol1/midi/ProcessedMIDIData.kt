@@ -22,8 +22,8 @@ import arrow.core.Tuple4
 import org.wysko.kmidi.midi.StandardMidiFile
 import org.wysko.kmidi.midi.TimeBasedSequence.Companion.toTimeBasedSequence
 import org.wysko.kmidi.midi.event.*
-import tisawem.gametesting.vol1.config.Config
-import tisawem.gametesting.vol1.ui.swing.ExceptionDialog
+import tisawem.gametesting.vol1.config.ConfigItem
+import tisawem.gametesting.vol1.ui.ExceptionDialog
 
 import kotlin.collections.*
 
@@ -49,58 +49,28 @@ class ProcessedMIDIData(kStdMidiFile: StandardMidiFile) {
         const val LSB_CONTROLLER: Byte = 32//LSB控制器
 
         /**
-         * 从[Config]读取的默认乐器的值
+         * 从[ConfigItem]读取的默认乐器的值
          *
          * Triple三项分别为MSB，LSB，Program Change
          */
           val defaultInstrument: Triple<Byte, Byte, Byte> by lazy {
-            try {
-                Config.DefaultInstrument.load()
-                    .split('_', limit = 3)
-                    .map { it.toByte().takeIf { number -> number>=0 }?:throw NumberFormatException("范围不对") }
-                    .let { Triple(it[0], it[1], it[2]) }
-            }catch (e: Throwable){
-                ExceptionDialog(e,true,"""
-1、NumberFormatException，IndexOutOfBoundsException：
-    config.properties的设置项: DefaultInstrument，文本格式，或者范围不对：
-        当前设置项的值为：${Config.DefaultInstrument.load()}
-
-    正确格式为 <MSB>_<LSB>_<Program Change> ，值均为自然数，最大值为127。
-    DefaultPercussion 用来代替 MSB=128 的情况
-
-其他错误为未知错误。
-        """.trimIndent())
-//Acoustic Grand Piano
-                Triple(0.toByte(),0.toByte(),0.toByte())
-            }
+            ConfigItem.DefaultInstrument.load()
+                .split('_', limit = 3)
+                .map { it.toByte() }
+                .let { Triple(it[0], it[1], it[2]) }
         }
 
         /**
-         * 从[Config]读取的默认打击乐器的值
+         * 从[ConfigItem]读取的默认打击乐器的值
          *
          * Pair两项分别为，LSB，Program Change。
          */
           val defaultPercussion: Pair<Byte, Byte> by lazy {
-            try {
-                Config.DefaultPercussion.load()
-                    .split('_', limit = 2)
-                    .map { it.toByte().takeIf { number -> number>=0 }?:throw NumberFormatException("范围不对") }
-                    .let { Pair(it[0], it[1]) }
-            }catch (e: Throwable){
-                ExceptionDialog(e,true,"""
-1、NumberFormatException，IndexOutOfBoundsException：
-    config.properties的设置项: DefaultPercussion，文本格式，或者范围不对：
-        当前设置项的值为：${Config.DefaultPercussion.load()}
-    正确格式为 <LSB>_<Program Change> ，值均为自然数，最大值为127。
-
-其他错误为未知错误。
-
-        """.trimIndent())
-//Standard Kit
-                Pair(0.toByte(),0.toByte() )
-            }
+            ConfigItem.DefaultPercussion.load()
+                .split('_', limit = 2)
+                .map { it.toByte() }
+                .let { Pair(it[0], it[1]) }
         }
-
 
 
     }
@@ -197,7 +167,7 @@ class ProcessedMIDIData(kStdMidiFile: StandardMidiFile) {
      */
     private fun initPercussionMusic(track: StandardMidiFile.Track) {
         // Create fake MSB for percussion (always fixed)
-        val fakeMSB = ControlChangeEvent(0, 0,0,0)
+        val fakeMSB = ControlChangeEvent(0, PERCUSSION_CHANNEL, MSB_CONTROLLER, defaultInstrument.first)
         val defaultLSB = ControlChangeEvent(0, PERCUSSION_CHANNEL, LSB_CONTROLLER, defaultPercussion.first)
         val defaultProgramChange = ProgramEvent(0, PERCUSSION_CHANNEL, defaultPercussion.second)
 

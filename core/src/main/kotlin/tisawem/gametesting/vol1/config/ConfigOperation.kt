@@ -18,7 +18,6 @@
 
 package tisawem.gametesting.vol1.config
 
-import tisawem.gametesting.vol1.ui.swing.ExceptionDialog
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 
@@ -48,17 +47,15 @@ object ConfigOperation {
         }
     }
 
-
+    // 读取配置，如果 key 不存在则返回 null
+    fun load(key: String): String? = synchronized(lock) {
+        configProperties.getProperty(key)
+    }
 
     // 读取配置，确保返回非空值；如果 key 不存在则抛出异常
-    fun load (key: String): String = synchronized(lock) {
+    fun loadOrThrow(key: String): String = synchronized(lock) {
         configProperties.getProperty(key)
-            ?: ExceptionDialog(NoSuchElementException(),false,"""
-配置项 $key 不存在，请检查 config.properties 文件。
-
-由于 GameTestingVol.1 严重依赖配置项
-正确读取到配置，程序才能正常工作。
-            """.trimIndent()).onExit()
+            ?: throw NoSuchElementException("配置项 $key 不存在")
     }
 
     // 写入配置到内存中

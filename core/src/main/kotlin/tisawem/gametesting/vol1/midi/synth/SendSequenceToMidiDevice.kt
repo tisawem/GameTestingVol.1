@@ -1,8 +1,11 @@
 package tisawem.gametesting.vol1.midi.synth
 
-import tisawem.gametesting.vol1.ui.swing.ExceptionDialog
+import tisawem.gametesting.vol1.ui.ExceptionDialog
 import java.io.File
 import javax.sound.midi.*
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 /**
  * A class responsible for sending a MIDI sequence to a MIDI output device for playback.
@@ -20,95 +23,129 @@ import javax.sound.midi.*
  *
  * Note: This player is designed for single-use only. Once playback has started, the instance cannot be reused.
  */
-open class SendSequenceToMidiDevice(
+class SendSequenceToMidiDevice(
     override val midiFile: File,
     override val readyCallback: (() -> Unit)?,
     override val finishCallback: (() -> Unit)?
 ) : MidiPlayer {
+    private var sequencer: Sequencer? = null
+    private var midiOutDevice: MidiDevice? = null
+    private var synthesizer: Synthesizer? = null
+    private var isPlaying = false
+    private var hasBeenPlayed = false
+    private val playLock = Object()
+    private var playbackThread: Thread? = null
 
     companion object {
         private const val POLLING_INTERVAL = 2000L // 轮询间隔
     }
 
-    private var isPlaying = false
-
-     open val midiDevice=try {
-        MidiDeviceManager.getPreferredOutputDevice()?.let {
-            MidiSystem.getMidiDevice(it)
-        }
-    } catch (e: MidiUnavailableException) {
-        ExceptionDialog(e, true, "无法打开MIDI输出设备")
-        null
-    }
-
-
-    private var sequencer: Sequencer? = try {
-        // 初始化sequencer和synthesizer
-        MidiSystem.getSequencer(midiDevice==null).apply {
-            open()
-            midiDevice?.let {
-                if (!it.isOpen)it.open()
-                transmitter.receiver=it.receiver
+    private val midiDevice: MidiDevice? by lazy {
+        try {
+            MidiDeviceManager.getPreferredOutputDevice()?.let {
+                MidiSystem.getMidiDevice(it).also { device ->
+                   if (!device.isOpen){
+                       device.open()
+                   }
+                }
             }
-
-            sequence = MidiSystem.getSequence(midiFile)
-
-
+        } catch (e: MidiUnavailableException) {
+            ExceptionDialog(e, true, "无法打开MIDI输出设备")
+            null
         }
-    } catch (e: Exception) {
-        stop()
-        ExceptionDialog(e, true, "合成器初始化错误。")
-        null
     }
-
-
 
     override fun play() {
-        if (isPlaying||sequencer==null){
-            ExceptionDialog(IllegalStateException(),true,"$this\n\n该实例已经在播放了，或者合成器初始化错误。")
-            return
-        }
+        synchronized(playLock) {
+            if (hasBeenPlayed) {
+                ExceptionDialog(IllegalStateException(),true,"$this 实例，只允许播放一次。一旦停止，实例即作废。")
 
-        Thread {
-            try {
+                return
+            }
+            if (isPlaying) {
+                return
+            }
+
+            hasBeenPlayed = true
+            isPlaying = true
+
+            playbackThread = Thread {
+                try {
+                    MidiSystem.getSequencer(midiDevice == null).apply {
+                        sequence = MidiSystem.getSequence(midiFile)
+                        midiDevice?.let {
+                            transmitter.receiver = it.receiver
+                        }
+                        open()
+                        start()
+
+                        // 调用准备就绪回调
+                        readyCallback?.invoke()
+                    }
 
 
-                sequencer?.start()
-                isPlaying = true
-                readyCallback?.invoke()
-
-                while (sequencer!!.isRunning) {
-                    try {
-                        Thread.sleep(POLLING_INTERVAL)
-                    } catch (_: InterruptedException) {
+                    // 等待播放完成
+                    while (isPlaying && sequencer?.isRunning == true) {
+                        try {
+                            Thread.sleep(POLLING_INTERVAL)
+                        } catch (_: InterruptedException) {
+                            // 继续检查循环条件
+                        }
+                    }
+                } catch (e: Exception) {
+                    ExceptionDialog(e, true)
+                    synchronized(playLock) {
+                        if (isPlaying) {
+                            cleanup()
+                        }
                     }
                 }
-            } catch (e: Throwable) {
-                stop()
-                ExceptionDialog(e, true, "Sequencer崩了，或者回调函数出错。")
             }
-        }.start()
-    }
 
-    override fun stop() = try {
-        if ( isPlaying) {
-            sequencer?.stop()
-            isPlaying = false
-            sequencer?.close()
-            sequencer = null
-            midiDevice?.close()
-
-
+            playbackThread?.name = "MIDI-Playback-Thread"
+            playbackThread?.isDaemon = true
+            playbackThread?.start()
         }
-        Unit
-    } catch (_: Exception) {} finally {
-
-        finishCallback?.invoke()
     }
 
-    override fun getMicroSecondPosition(): Long? = if (isPlaying) sequencer?.microsecondPosition else null
+    override fun stop() {
+        synchronized(playLock) {
+            if (isPlaying) {
+                cleanup()
+            }
+        }
+    }
 
+    override fun getPosition(): Duration? = synchronized(playLock) {
+        val currentSequencer = sequencer
+        if (!isPlaying || currentSequencer == null) {
+            null
+        } else {
+            currentSequencer.microsecondPosition.toDuration(DurationUnit.MICROSECONDS)
+        }
+    }
 
+    private fun cleanup() {
+        isPlaying = false
 
+        try {
+            sequencer?.apply {
+                stop()
+                close()
+            }
+            sequencer = null
 
+            midiOutDevice?.apply {
+                close()
+            }
+            midiOutDevice = null
+
+            synthesizer?.apply {
+                close()
+            }
+            synthesizer = null
+        } finally {
+            finishCallback?.invoke()
+        }
+    }
 }

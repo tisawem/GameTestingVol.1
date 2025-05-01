@@ -20,7 +20,7 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3NativesLoader
 import org.lwjgl.system.JNI
 import org.lwjgl.system.macosx.LibC
 import org.lwjgl.system.macosx.ObjCRuntime
-import tisawem.gametesting.vol1.ui.swing.ExceptionDialog
+import tisawem.gametesting.vol1.ui.ExceptionDialog
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader

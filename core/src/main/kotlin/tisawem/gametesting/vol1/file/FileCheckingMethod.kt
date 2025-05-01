@@ -31,7 +31,7 @@ import javax.sound.midi.MidiSystem
  * 提供一个函数，如果文件有效，返回Right(File)，反之，Left(String)，包含原因。
  *
  * 流程就是：路径是不是空白，路径是不是指向文件，能否解析这个文件，这个文件是否包含必要信息
- * @see  tisawem.gametesting.vol1.ui.swing.FileLoader.loadingFileFromJFileChooser
+ * @see  FileLoader.loadingFileFromJFileChooser
  * @param method 一个函数，接收一个[java.io.File]，返回[Right]（File）或 [Left]（String）
  */
 enum class FileCheckingMethod(val method: (File) -> Either<String, File>) {
@@ -40,7 +40,7 @@ enum class FileCheckingMethod(val method: (File) -> Either<String, File>) {
             if (it.path.isBlank()) {
                 Left(getMessages("MIDI_File_Path_Is_Blank"))
             } else if (!it.isFile) {
-                Left(getMessages("MIDI_File_Path_Not_Point_To_File"))
+                Left(getMessages("MIDI_File_Path_Not_Point_to_File"))
             } else {
                 MidiSystem.getSequence(it)//是不是javax.sound.midi承认的序列
 
@@ -62,7 +62,7 @@ enum class FileCheckingMethod(val method: (File) -> Either<String, File>) {
             Left(getMessages("SoundFont_File_Path_Is_Blank"))
         }
         if (!it.isFile) {
-            Left(getMessages("SoundFont_File_Path_Not_Point_To_File"))
+            Left(getMessages("SoundFont_File_Path_Not_Point_to_File"))
         }
         val instance = FluidSynthJava()//创建FluidSynthJava实例
         try {

@@ -4,6 +4,10 @@
 
 **源代码许可证：** [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html) or later
 
+> GPLv3许可证原文：[LICENSE_GPLv3.md](LICENSE_GPLv3.md)
+>
+> 素材所使用的各个[Creative Commons](https://creativecommons.org/)许可证，在[CCLicense](assets/CCLicense)文件夹下。
+
 * $$目录$$
 
 <!-- TOC -->
@@ -21,24 +25,16 @@
 
 计划做一个MIDI事件可视化的程序，类似[midis2jam2](https://midis2jam2.xyz/)软件的超级缩水版。
 
-很抱歉项目又删了又重新推送。
+我对Java，Kotlin语言，及标准库陌生，也对LibGDX框架陌生。但别的语言，框架我更不会。
 
-目前来看，这个项目的程序设计，距离稳定，还有很长的路要走。
+我对框架的了解一穷二白，代码基本全是语言模型写的。我可能写了一个极其糟糕，且无法正常工作的实现，然后让语言模型优化。或者直接让语言模型实现。
 
-个人原因，这个项目估计6月份又得无限期的搁置。
+LibGDX前端部分代码，基本是Scene2D代码，KTX，基本只用上了KtxGame, KtxScreen, disposeSafety。别的拓展函数我不打算了解。 
 
-另外，我的开发能力确实很弱，也对各个框架陌生。
+直到清明节前，完成了第一个可以使用的版本，也是临近漫展的日子，赶鸭子上架。
 
-这个项目也大量的使用了语言模型生成的代码。
+目前的源代码不全，现在正在重构，GDX部分够呛。
 
-
-为了解决素材和GPL许可证冲突的问题
-
-该项目将不会出现任何包含 `Tisawem東北項目` Logo 和 `Renkween` 形象的素材。Legacy文件夹也随即删除。
-
-第一个Release，由于包含了Renkween素材，也会随即删除。
-
-之后的一段时间，我再研究素材的问题。
 ## 该项目使用的包，框架，及主要功能
 
 | 包，框架                                                                                      | 主要功能                                          |
@@ -49,11 +45,8 @@
 | [org.jjazz.fluidsynthjava](https://github.com/jjazzboss/FluidSynthJava)                   | 内置合成器的方案，将MIDI序列转为Wave音频，由Java Sound API进行播放。 |
 | [arrow-kt](https://arrow-kt.io/)                                                          | 提供Either和Tuple类型                              |
 | [ICU4J](https://icu.unicode.org/home)                                                     | 提供国际化支持                                       |
-| [Kotlin Reflect](https://kotlinlang.org/)                                                 | Kotlin反射支持                                    |
 
-以及 Java™ SE 和 Kotlin 的标准库。
 
-对Java发行版的版本要求最低是23。
 
 ## `assets`文件夹的说明
 
@@ -61,18 +54,17 @@
 
 请留意每个文件夹下的许可证
 
-| 文件或文件夹                        | 描述                                                                    |
-|:------------------------------|:----------------------------------------------------------------------|
-| [CCLicense](assets/CCLicense) | 存放[Creative Commons](https://creativecommons.org/)的许可证                |
-| [Font](assets/Font)           | 存放字体文件，该项目使用[思源黑体](https://github.com/adobe-fonts/source-han-sans)    |
-| [Musician](assets/Musician)   | 存放角色（演奏席位）的素材                                                         |
-| [ui](assets/ui)               | 使用[gdx-liftoff](https://github.com/libgdx/gdx-liftoff)创建项目时，添加的GUI资源。 |
+| 文件或文件夹                                    | 描述                                                                                                    |
+|:------------------------------------------|:------------------------------------------------------------------------------------------------------|
+| [CCLicense](assets/CCLicense)             | 存放[Creative Commons](https://creativecommons.org/)的许可证                                                |
+| [Font](assets/Font)                       | 存放字体文件，该项目使用[思源黑体](https://github.com/adobe-fonts/source-han-sans)                                    |
+| [Legacy](assets/Legacy)                   | 存放项目无关的，但想放在此项目的文件。                                                                                   |
+| [Musician](assets/Musician)               | 存放[PerformanceSeat](core/src/main/kotlin/tisawem/gametesting/vol1/gdx/performseat)实现类的配套素材 |
+| [ui](assets/ui)                           | 使用[gdx-liftoff](https://github.com/libgdx/gdx-liftoff)创建项目时添加的GUI资源                                   |
 
 ## 平台
 
 该项目针对桌面端进行开发
-
-目前程序在 Windows 11 24H2 和 Debian 12.10 操作系统上进行测试。
 
 * `core`: 主要模块，包含所有平台共享的应用逻辑。
 * `lwjgl3`: 使用LWJGL3的主要桌面平台；在旧版文档中称为“desktop”。

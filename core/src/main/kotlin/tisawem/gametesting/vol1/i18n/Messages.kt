@@ -21,7 +21,7 @@ package tisawem.gametesting.vol1.i18n
 import com.ibm.icu.util.ULocale
 import com.ibm.icu.util.UResourceBundle
 import tisawem.gametesting.vol1.config.ConfigItem
-import tisawem.gametesting.vol1.ui.ExceptionDialog
+import tisawem.gametesting.vol1.ui.swing.ExceptionDialog
 import java.util.MissingResourceException
 
 

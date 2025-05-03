@@ -23,7 +23,8 @@ import org.wysko.kmidi.midi.StandardMidiFile
 import org.wysko.kmidi.midi.TimeBasedSequence.Companion.toTimeBasedSequence
 import org.wysko.kmidi.midi.event.*
 import tisawem.gametesting.vol1.config.ConfigItem
-import tisawem.gametesting.vol1.ui.ExceptionDialog
+import tisawem.gametesting.vol1.config.ConfigItemToolkit
+import tisawem.gametesting.vol1.ui.swing.ExceptionDialog
 
 import kotlin.collections.*
 
@@ -54,10 +55,27 @@ class ProcessedMIDIData(kStdMidiFile: StandardMidiFile) {
          * Triple三项分别为MSB，LSB，Program Change
          */
           val defaultInstrument: Triple<Byte, Byte, Byte> by lazy {
-            ConfigItem.DefaultInstrument.load()
-                .split('_', limit = 3)
-                .map { it.toByte() }
-                .let { Triple(it[0], it[1], it[2]) }
+            try {
+                ConfigItem.DefaultInstrument.load()
+                    .split('_', limit = 3)
+                    .map { it.toByte().takeIf { number -> number>=0 }?:throw NumberFormatException("范围不对") }
+                    .let { Triple(it[0], it[1], it[2]) }
+            }catch (e: Throwable){
+                ExceptionDialog(e,true,"""
+1、NumberFormatException，IndexOutOfBoundsException：
+    config.properties的设置项: DefaultInstrument，文本格式，或者范围不对：
+        当前设置项的值为：${ConfigItem.DefaultInstrument.load()}
+
+    正确格式为 <MSB>_<LSB>_<Program Change> ，值均为自然数，最大值为127。
+    DefaultPercussion 用来代替 MSB=128 的情况
+
+2、NoSuchElementException， 请检查 config.properties文件 是否缺少 DefaultInstrument 设置项
+
+其他错误为未知错误。
+        """.trimIndent())
+//Acoustic Grand Piano
+                Triple(0.toByte(),0.toByte(),0.toByte())
+            }
         }
 
         /**
@@ -66,11 +84,28 @@ class ProcessedMIDIData(kStdMidiFile: StandardMidiFile) {
          * Pair两项分别为，LSB，Program Change。
          */
           val defaultPercussion: Pair<Byte, Byte> by lazy {
-            ConfigItem.DefaultPercussion.load()
-                .split('_', limit = 2)
-                .map { it.toByte() }
-                .let { Pair(it[0], it[1]) }
+            try {
+                ConfigItem.DefaultPercussion.load()
+                    .split('_', limit = 2)
+                    .map { it.toByte().takeIf { number -> number>=0 }?:throw NumberFormatException("范围不对") }
+                    .let { Pair(it[0], it[1]) }
+            }catch (e: Throwable){
+                ExceptionDialog(e,true,"""
+1、NumberFormatException，IndexOutOfBoundsException：
+    config.properties的设置项: DefaultPercussion，文本格式，或者范围不对：
+        当前设置项的值为：${ConfigItem.DefaultPercussion.load()}
+    正确格式为 <LSB>_<Program Change> ，值均为自然数，最大值为127。
+
+2、NoSuchElementException， 请检查 config.properties文件 是否缺少 DefaultPercussion 设置项
+
+其他错误为未知错误。
+
+        """.trimIndent())
+//Standard Kit
+                Pair(0.toByte(),0.toByte() )
+            }
         }
+
 
 
     }

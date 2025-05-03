@@ -4,7 +4,7 @@ import org.jjazz.fluidsynthjava.api.FluidSynthJava
 
 import java.io.File
 import tisawem.gametesting.vol1.config.ConfigItem
-import tisawem.gametesting.vol1.ui.ExceptionDialog
+import tisawem.gametesting.vol1.ui.swing.ExceptionDialog
 import javax.sound.sampled.*
 import kotlin.time.Duration
 import kotlin.time.DurationUnit

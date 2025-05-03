@@ -1,6 +1,6 @@
 package tisawem.gametesting.vol1.midi.synth
 
-import tisawem.gametesting.vol1.ui.ExceptionDialog
+import tisawem.gametesting.vol1.ui.swing.ExceptionDialog
 import java.io.File
 import javax.sound.midi.*
 import kotlin.time.Duration

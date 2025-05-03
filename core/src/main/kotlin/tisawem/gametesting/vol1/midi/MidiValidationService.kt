@@ -22,7 +22,7 @@ import arrow.core.Either
 import org.wysko.kmidi.midi.reader.StandardMidiFileReader
 import org.wysko.kmidi.midi.reader.readFile
 import tisawem.gametesting.vol1.config.ConfigItem
-import tisawem.gametesting.vol1.ui.ExceptionDialog
+import tisawem.gametesting.vol1.ui.swing.ExceptionDialog
 import tisawem.gametesting.vol1.file.FileCheckingMethod
 import tisawem.gametesting.vol1.i18n.Messages
 import tisawem.gametesting.vol1.midi.synth.MidiDeviceManager

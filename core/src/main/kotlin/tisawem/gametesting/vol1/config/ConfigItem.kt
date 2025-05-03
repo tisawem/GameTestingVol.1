@@ -40,7 +40,6 @@ enum class ConfigItem(val load: () -> String, val write: (String) -> Any?) {
     Language("Language"),
     MIDIFile("MIDIFile"),
     MIDIOutputDevice("MIDI_Output_Device"),
-    FullScreen("FullScreen"),
     ScreenAheadPerform("ScreenAheadPerform"),
 
 

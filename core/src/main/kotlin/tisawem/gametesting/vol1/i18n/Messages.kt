@@ -59,7 +59,7 @@ object Messages {
         if (bundle == null || currentLanguage != configLanguage) {
             synchronized(lock) { // 加锁确保线程安全
                 if (bundle == null || currentLanguage != configLanguage) {  // 双重检查锁定
-                    try {/* 使用类加载器加载资源
+                 /* 使用类加载器加载资源
                           UResourceBundle.getBundleInstance可以自动处理，它有以下行为：
                           如果configLanguage不是受支持的语言代码，就使用系统语言，若系统语言不支持，就使用messages.properties
                           当ConfigLanguage为空白时，将直接使用messages.properties
@@ -69,11 +69,7 @@ object Messages {
                             ConfigItem.LanguageResourcePath.load(), configLanguage, Messages.javaClass.classLoader
                         )
                         currentLanguage = configLanguage
-                    } catch (m: MissingResourceException) {
-                        ExceptionDialog(m, true, "类路径可能有误，或者类路径下没有messages.properties文件")
-                    } catch (e: Throwable) {
-                        ExceptionDialog(e, true, "未知错误")
-                    }
+
                 }
             }
         }
@@ -88,10 +84,22 @@ object Messages {
         ExceptionDialog(
             e,
             true,
-            """NullPointerException – Bundle is not initialized.
-MissingResourceException – 没有 $key 对应的字符串.
-ClassCastException – if the object found for the given key is not a string.
-Else - 未知错误。"""
+            """
+1、MissingResourceException
+    a.  ${ConfigItem.LanguageResourcePath.load()}
+        该类路径下没有messages.properties文件
+
+    b.  messages.properties 文件 没有 $key 对应的字符串.
+
+以下错误需要检查源代码，它们不应该抛出。
+    1、NullPointerException
+        Bundle未初始化。
+
+    2、ClassCastException
+        $key 不是字符串
+
+其他错误为未知错误。该函数返回：
+“[$key]”""".trimIndent()
         )
         "[$key]"
     }

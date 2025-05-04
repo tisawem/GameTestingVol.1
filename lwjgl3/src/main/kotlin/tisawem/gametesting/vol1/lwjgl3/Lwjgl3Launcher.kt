@@ -27,7 +27,6 @@ fun main() {
             Gdx.input.inputProcessor= object : InputAdapter() {
                 override fun keyDown(keycode: Int): Boolean {
 
-                    ConfigItemToolkit.setFullScreenModeByJFrame()
                     return true
                 }
             }

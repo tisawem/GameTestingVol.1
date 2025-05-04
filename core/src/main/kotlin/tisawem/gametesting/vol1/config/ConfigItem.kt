@@ -30,10 +30,9 @@ package tisawem.gametesting.vol1.config
  *
  * 程序设计时，自觉的，保证不会写入仅读设置项
  *@param load 读取配置项
+ * 如果没有读取到，整个程序会停止
  * @param write 写入配置项，返回the previous value of the specified key, or null if it did not have one.
- * @throws NoSuchElementException 如果没有读取到相应的配置项
  *
- * 至于还会抛出什么错误，我也不知道。
  */
 enum class ConfigItem(val load: () -> String, val write: (String) -> Any?) {
     // 可读写设置项 (会在config.properties文件写入的配置)
@@ -55,7 +54,7 @@ enum class ConfigItem(val load: () -> String, val write: (String) -> Any?) {
 
     ;
 
-    constructor(item: String) : this({ ConfigOperation.loadOrThrow(item) }, { s -> ConfigOperation.write(item, s) })
+    constructor(item: String) : this({ ConfigOperation.load (item) }, { s -> ConfigOperation.write(item, s) })
 }
 
 

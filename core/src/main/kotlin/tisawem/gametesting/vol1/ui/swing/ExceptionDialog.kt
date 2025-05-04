@@ -20,59 +20,26 @@ package tisawem.gametesting.vol1.ui.swing
 
 import com.badlogic.gdx.Gdx
 import java.awt.BorderLayout
-import java.awt.Container
 import java.awt.Dimension
 import java.awt.Font
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import java.awt.event.WindowFocusListener
-import javax.swing.BorderFactory
-import javax.swing.Box
-import javax.swing.BoxLayout
-import javax.swing.JButton
-import javax.swing.JDialog
-import javax.swing.JLabel
-import javax.swing.JPanel
-import javax.swing.JScrollPane
-import javax.swing.JTextArea
-import javax.swing.SwingUtilities
-import javax.swing.UIManager
-import javax.swing.WindowConstants
+import javax.swing.*
 import kotlin.system.exitProcess
 
 
-/**
- * A dialog window designed to display exception details and provide user interaction options.
- *
- * This dialog presents information about a throwable error, including its stack trace and an optional description.
- * It allows the user to decide whether to continue using the program (if possible) or exit. The dialog is modal,
- * always on top, and uses the system's look and feel for a native appearance.
- *
- * The dialog includes:
- * - A message label indicating whether the program can continue running or must exit.
- * - A scrollable text area displaying the error description and stack trace.
- * - Buttons for continuing the program (if allowed) and exiting the program.
- *
- * If the program cannot continue, the dialog ensures the application exits when closed. The exit behavior can be
- * customized by providing an `onExit` callback function.
- *
- * The dialog prints the stack trace of the throwable to the console upon initialization for debugging purposes.
- *
- *
- * @param throwable 想要抛出的错误
- * @param canContinue 程序能否继续运行，或者强制抛出错误，结束程序。
- *true选项，通常用于替代[printStackTrace]函数。
- * @param description 给用户看的错误描述
- * @param onExit 强制退出的执行脚本，也就是点击退出按钮要执行的脚本。
- */
-class ExceptionDialog(
-    throwable: Throwable,
+class ExceptionDialog (
+     throwable: Throwable,
     canContinue: Boolean,
-    description: String? = null,
-    onExit: () -> Unit = {
-        Gdx.app?.exit()
+    description: String = "",
+    val onExit:()-> Nothing={
+        try {
+            Gdx.app.exit()
+        }catch (_: Throwable){}
         exitProcess(-1)
     }
+
 ) {
     private val dialog = JDialog().apply {
         defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
@@ -82,8 +49,16 @@ class ExceptionDialog(
 
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
 
+        if (!canContinue) {
+            addWindowListener(object : WindowAdapter() {
+                override fun windowClosed(e: WindowEvent) {onExit() }
+                override fun windowClosing(e: WindowEvent) {onExit()}
+            })
+        }
 
-        // 焦点恢复
+
+
+        // 强制焦点恢复
         addWindowFocusListener(object : WindowFocusListener {
             override fun windowGainedFocus(e: WindowEvent?) {}
             override fun windowLostFocus(e: WindowEvent?) {
@@ -94,12 +69,6 @@ class ExceptionDialog(
             }
         })
 
-        if (!canContinue) {
-            addWindowListener(object : WindowAdapter() {
-                override fun windowClosed(e: WindowEvent) { onExit() }
-                override fun windowClosing(e: WindowEvent) { onExit() }
-            })
-        }
 
 
     }
@@ -127,7 +96,8 @@ class ExceptionDialog(
                 """.trimIndent()
             ).apply {
                 font = Font(null, Font.PLAIN, 16)
-                addActionListener { dialog.dispose() }
+                addActionListener {
+                    dialog.dispose() }
             }
             add(continueButton)
             add(Box.createRigidArea(Dimension(10, 0)))
@@ -142,13 +112,13 @@ class ExceptionDialog(
             """.trimIndent()
         ).apply {
             font = Font(null, Font.PLAIN, 16)
-            addActionListener { onExit() }
+            addActionListener { onExit()}
         }
         add(exitButton)
     }
 
     private val errorDescriptionArea = JTextArea(
-        "错误描述 / Error Description:${if (description == null) "" else "\n\n$description"}\n\n${throwable.stackTraceToString()}"
+        "错误描述 / Error Description:\n\n$description\n\n${throwable.stackTraceToString()}"
     ).apply {
         isEditable = false
         lineWrap = true
@@ -166,19 +136,16 @@ class ExceptionDialog(
     }
 
     init {
-        throwable.printStackTrace()
+      throwable.printStackTrace()
 
         dialog.apply {
             contentPane = panel
             pack()
             setLocationRelativeTo(null)
 
-            Gdx.graphics?.let {
-                if (it.isFullscreen){
-                    Gdx.graphics.setWindowedMode(size.width,size.height)
-                }
-            }
-
+          try {
+              Gdx.graphics.setWindowedMode(size.width,size.height)
+          }catch (_: Throwable){}
             isVisible = true
 
             SwingUtilities.invokeLater {
@@ -187,4 +154,5 @@ class ExceptionDialog(
             }
         }
     }
+
 }

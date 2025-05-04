@@ -69,8 +69,6 @@ class ProcessedMIDIData(kStdMidiFile: StandardMidiFile) {
     正确格式为 <MSB>_<LSB>_<Program Change> ，值均为自然数，最大值为127。
     DefaultPercussion 用来代替 MSB=128 的情况
 
-2、NoSuchElementException， 请检查 config.properties文件 是否缺少 DefaultInstrument 设置项
-
 其他错误为未知错误。
         """.trimIndent())
 //Acoustic Grand Piano
@@ -95,8 +93,6 @@ class ProcessedMIDIData(kStdMidiFile: StandardMidiFile) {
     config.properties的设置项: DefaultPercussion，文本格式，或者范围不对：
         当前设置项的值为：${ConfigItem.DefaultPercussion.load()}
     正确格式为 <LSB>_<Program Change> ，值均为自然数，最大值为127。
-
-2、NoSuchElementException， 请检查 config.properties文件 是否缺少 DefaultPercussion 设置项
 
 其他错误为未知错误。
 

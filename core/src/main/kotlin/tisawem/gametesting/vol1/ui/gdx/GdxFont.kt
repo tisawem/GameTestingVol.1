@@ -21,7 +21,7 @@ package tisawem.gametesting.vol1.ui.gdx
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
-import tisawem.gametesting.vol1.config.Config
+import tisawem.gametesting.vol1.config.ConfigItem
 import tisawem.gametesting.vol1.i18n.Messages.getMessages
 import tisawem.gametesting.vol1.ui.swing.ExceptionDialog
 import java.io.FileNotFoundException
@@ -46,7 +46,7 @@ object GdxFont {
             var string = FreeTypeFontGenerator.DEFAULT_CHARS // 默认字符集
             Properties().apply {
                 // 使用类加载器获取资源输入流
-                val inputStream = GdxFont.javaClass.classLoader.getResourceAsStream("${Config.LanguageResourcePath.load()}.properties")
+                val inputStream = GdxFont.javaClass.classLoader.getResourceAsStream("${ConfigItem.LanguageResourcePath.load()}.properties")
                     ?: throw FileNotFoundException()
                 load(inputStream)
                 inputStream.close()
@@ -59,7 +59,7 @@ object GdxFont {
         }catch (e: Throwable){
             ExceptionDialog(e,true,"""
 1、FileNotFoundException
-     无法找到资源文件: ${Config.LanguageResourcePath.load()}.properties
+     无法找到资源文件: ${ConfigItem.LanguageResourcePath.load()}.properties
 
 3、IOException
     if an error occurred when reading from the input stream.
@@ -90,7 +90,7 @@ ${FreeTypeFontGenerator.DEFAULT_CHARS}
      * 具体实现是基于 getBitmapFont 函数
      */
     fun getLightBitmapFont(config: FreeTypeFontGenerator.FreeTypeFontParameter.() -> Unit) =
-        getBitmapFont(Config.FontLight.load()) { // 加载字体
+        getBitmapFont(ConfigItem.FontLight.load()) { // 加载字体
             characters = getCharacters() //设置字符集
             config(this) // 调用传入的配置函数，调整字体参数
         }
@@ -100,7 +100,7 @@ ${FreeTypeFontGenerator.DEFAULT_CHARS}
      * @see getLightBitmapFont
      */
     fun getRegularBitmapFont(config: FreeTypeFontGenerator.FreeTypeFontParameter.() -> Unit) =
-        getBitmapFont(Config.FontRegular.load()) {
+        getBitmapFont(ConfigItem.FontRegular.load()) {
             characters = getCharacters()
             config(this)
         }
@@ -110,7 +110,7 @@ ${FreeTypeFontGenerator.DEFAULT_CHARS}
      * @see getLightBitmapFont
      */
     fun getBoldBitmapFont(config: FreeTypeFontGenerator.FreeTypeFontParameter.() -> Unit) =
-        getBitmapFont(Config.FontBold.load()) {
+        getBitmapFont(ConfigItem.FontBold.load()) {
             characters = getCharacters()
             config(this)
         }

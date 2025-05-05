@@ -4,13 +4,14 @@ import arrow.core.Either
 import com.badlogic.gdx.Gdx
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
-import tisawem.gametesting.vol1.config.Config
+import tisawem.gametesting.vol1.config.ConfigItem
 import tisawem.gametesting.vol1.file.ExtensionFilter
 import tisawem.gametesting.vol1.file.FileCheckingMethod
 import tisawem.gametesting.vol1.i18n.Messages.getMessages
 import tisawem.gametesting.vol1.midi.synth.MidiDeviceManager
 import java.awt.BorderLayout
 import java.awt.Dimension
+import java.awt.FlowLayout
 import java.awt.Font
 import java.awt.GridLayout
 import java.awt.event.WindowAdapter
@@ -21,13 +22,6 @@ import javax.swing.*
 class HomePage(val game: KtxGame<KtxScreen>) : JFrame("GameTestingVol.1 ${getMessages("HomePage")}") {
     init {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
-
-        defaultCloseOperation = DO_NOTHING_ON_CLOSE
-addWindowListener(object : WindowAdapter() {
-    override fun windowClosing(e: WindowEvent?) {
-         Gdx.app.exit()
-    }
-})
     }
 
 
@@ -89,12 +83,7 @@ addWindowListener(object : WindowAdapter() {
         toolTipText = getMessages("Play_Tips")
     }
 
-    private val settings = JButton(getMessages("Settings")).apply {
-        usingGlobalProperties()
-        addActionListener {
-            Settings(this@HomePage,game)
-        }
-    }
+    private val settings = JButton(getMessages("Settings")).usingGlobalProperties()
 
     private val openMidiFile = JButton(getMessages("Open_MIDI_File")).apply {
         usingGlobalProperties()
@@ -103,7 +92,7 @@ addWindowListener(object : WindowAdapter() {
            loopingAskUserForFileOrAbandon({FileLoader.loadingFileFromJFileChooser(
                ExtensionFilter.MIDIFile.filter,
                FileCheckingMethod.MIDIFile.method
-           )})?.let { Config.MIDIFile.write(it.canonicalPath)
+           )})?.let { ConfigItem.MIDIFile.write(it.canonicalPath)
            midiFilePathTextArea.text=it.canonicalPath
 
            }
@@ -117,7 +106,7 @@ addWindowListener(object : WindowAdapter() {
             loopingAskUserForFileOrAbandon({FileLoader.loadingFileFromJFileChooser(
                 ExtensionFilter.SoundFont.filter,
                 FileCheckingMethod.SoundFont.method
-            )})?.let { Config.MIDIOutputDevice.write(it.canonicalPath)
+            )})?.let { ConfigItem.MIDIOutputDevice.write(it.canonicalPath)
                 deviceOrSf2PathTextArea.text=it.canonicalPath
 
             }
@@ -128,7 +117,6 @@ addWindowListener(object : WindowAdapter() {
         usingGlobalProperties()
         addActionListener {
             this@HomePage.dispose()
-            Gdx.app.exit()
         }
     }
     private val buttons = JPanel(GridLayout(5, 1, 5, 5)).apply {
@@ -145,16 +133,6 @@ addWindowListener(object : WindowAdapter() {
     private val midiDeviceLabel = JLabel(getMessages("Output_MIDI_Device")).usingGlobalProperties()
     private val midiDevice = JComboBox(MidiDeviceManager.getAvailableMIDIOutputDevices().toTypedArray()).apply {
         font = Font(null, Font.PLAIN, 28)
-        toolTipText=getMessages("Output_MIDI_Device_Tips")+"  Microsoft MIDI Mapper  Microsoft GS Wavetable Synth"
-
-       addActionListener {
-          selectedItem?.let {
-              Config.MIDIOutputDevice.write(it.toString() )
-              deviceOrSf2PathTextArea.text=it.toString()
-          }
-       }
-
-
     }
 
     private val midiDevicePanel = JPanel(GridLayout(2, 1, 5, 5)).apply {
@@ -167,22 +145,16 @@ addWindowListener(object : WindowAdapter() {
        */
 
 
-    private val midiFileLabel = JLabel(getMessages("Will_Used_MIDI_File")).usingGlobalProperties()
+    private val midiFileLabel = JLabel(getMessages("Opened_MIDI_File")).usingGlobalProperties()
 
 
-    private val midiFilePathTextArea = JTextArea(Config.MIDIFile.load()).apply {
-        usingGlobalProperties()
-        toolTipText=getMessages("Will_Used_MIDI_File_Tips")
-    }
+    private val midiFilePathTextArea = JTextArea(ConfigItem.MIDIFile.load()).usingGlobalProperties()
     private val midiFilePathPane = JScrollPane(midiFilePathTextArea)
 
-    private val deviceLabel = JLabel(getMessages("Will_Used_Device")).usingGlobalProperties()
+    private val deviceLabel = JLabel(getMessages("Opened_Device")).usingGlobalProperties()
 
 
-    private val deviceOrSf2PathTextArea = JTextArea(Config.MIDIOutputDevice.load()).apply {
-        usingGlobalProperties()
-        toolTipText=getMessages("Will_Used_Device_Tips")
-    }
+    private val deviceOrSf2PathTextArea = JTextArea(ConfigItem.MIDIOutputDevice.load()).usingGlobalProperties()
     private val deviceOrSf2PathPane = JScrollPane(deviceOrSf2PathTextArea)
 
     private val statuePanel = JPanel().apply {
@@ -204,6 +176,13 @@ addWindowListener(object : WindowAdapter() {
 
     init {
 
+        defaultCloseOperation = DISPOSE_ON_CLOSE
+        addWindowListener(object : WindowAdapter() {
+            override fun windowClosed(e: WindowEvent?) {
+                Gdx.app.exit()
+            }
+
+        })
         add(mainPanel)
 
         pack() // 根据组件首选大小调整窗口

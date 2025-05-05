@@ -65,15 +65,13 @@ object MidiValidationService {
     /**
      *  如果验证通过，创建并返回MidiEventProcess实例，否则返回null
      */
-    fun createMidiEventProcess(): ProcessedMIDIData? {
-        try {
+    fun createMidiEventProcess()=  try {
 
-            val file = FileCheckingMethod.MIDIFile.method(File(ConfigItem.MIDIFile.load())).getOrNull() ?: return null
+        val file = FileCheckingMethod.MIDIFile.method(File(ConfigItem.MIDIFile.load())).getOrNull() ?: return null
 
-            return ProcessedMIDIData(StandardMidiFileReader().readFile(file))
-        } catch (e: Throwable) {
-            ExceptionDialog(e,true,"未知原因")
-            return null
-        }
+        ProcessedMIDIData(StandardMidiFileReader().readFile(file))
+    } catch (e: Throwable) {
+        ExceptionDialog(e,true,"未知原因")
+        null
     }
 }

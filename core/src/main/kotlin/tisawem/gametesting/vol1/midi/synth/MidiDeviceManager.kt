@@ -22,6 +22,7 @@ import tisawem.gametesting.vol1.config.ConfigItem
 import java.io.File
 import javax.sound.midi.MidiDevice
 import javax.sound.midi.MidiSystem
+import kotlin.collections.forEach
 
 /**
  * A singleton object responsible for managing MIDI output devices and providing playback functionality.
@@ -29,7 +30,7 @@ import javax.sound.midi.MidiSystem
  * This object provides methods to retrieve available MIDI output devices, determine the preferred output device,
  * and select an appropriate player implementation based on the availability of the preferred device.
  *
- * The `getAvailableMIDIOutputDevices` method filters out specific devices such as "Real Time Sequencer",
+ * The `getAvailableMIDIOutputDevices` method filters out specific devices such as "Gervill"、"Real Time Sequencer",
  * "Microsoft MIDI Mapper", and "Microsoft GS Wavetable Synth". Only devices capable of receiving MIDI data
  * are included in the resulting map.
  *
@@ -47,29 +48,23 @@ object MidiDeviceManager {
     /**
      * 获取可用的 MIDI 输出设备
      *
-     * "Real Time Sequencer"、"Microsoft MIDI Mapper"、"Microsoft GS Wavetable Synth" 这类设备会被过滤掉。
+     * "Real Time Sequencer"、"Microsoft MIDI Mapper"、"Microsoft GS Wavetable Synth"、"Gervill"这类设备会被过滤掉。
      */
-    fun getAvailableMIDIOutputDevices(): Map<String, MidiDevice.Info> =
-        mutableMapOf<String, MidiDevice.Info>().apply {
-            MidiSystem.getMidiDeviceInfo().forEach { d ->
-                when (d.name) {
-                    "Real Time Sequencer", "Microsoft MIDI Mapper", "Microsoft GS Wavetable Synth" -> {}
-                    else -> try {
-                        // 只有接收 MIDI 数据的设备才加入 map
-                        if (MidiSystem.getMidiDevice(d).maxReceivers != 0) {
-                            put(d.name, d)
-                        }
-                    } catch (_: Throwable) {
-                        // 忽略不可用设备
-                    }
+    fun getAvailableMIDIOutputDevices()  =
+        MidiSystem.getMidiDeviceInfo().filter {
+            when (it.name) {
+                "Real Time Sequencer", "Microsoft MIDI Mapper", "Microsoft GS Wavetable Synth","Gervill" -> false
+                else -> try {
+                    // 只有接收 MIDI 数据的设备才加入 map
+                    MidiSystem.getMidiDevice(it).maxReceivers != 0
+                } catch (_: Throwable) {
+                    // 忽略不可用设备
+                    false
                 }
             }
         }
 
-    fun getPreferredOutputDevice(): MidiDevice.Info? {
-        val preferredDeviceName = ConfigItem.MIDIOutputDevice.load()
-        return getAvailableMIDIOutputDevices()[preferredDeviceName]
-    }
+    fun getPreferredOutputDevice()=getAvailableMIDIOutputDevices().find { it.name==ConfigItem.MIDIOutputDevice.load() }
 
 
     /**

@@ -104,4 +104,14 @@ object Messages {
         "[$key]"
     }
 
+    /**
+     * <LF> is Line Feed in messages.properties
+     *
+     * Replaces all occurrences of `<LF>` in the input string with `\n`.
+     *
+     * @return The processed string with `<LF>` replaced by `\n`.
+     */
+    fun getMessagesWithLineFeedReplace(key: String)=getMessages(key).replace("<LF>", "\n")
+
+
 }

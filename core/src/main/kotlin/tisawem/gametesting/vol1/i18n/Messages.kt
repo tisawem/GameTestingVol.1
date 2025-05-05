@@ -45,6 +45,8 @@ import java.util.MissingResourceException
 object Messages {
     enum class SupportedLanguage(val locale: ULocale) {
         Default(ULocale.ENGLISH), Zh(ULocale.CHINESE), Ja(ULocale.JAPANESE);
+
+        override fun toString(): String =locale.displayLanguage
     }
 
     private var bundle: UResourceBundle? = null

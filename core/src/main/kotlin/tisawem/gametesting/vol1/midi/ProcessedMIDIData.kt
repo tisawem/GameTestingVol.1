@@ -198,7 +198,7 @@ class ProcessedMIDIData(kStdMidiFile: StandardMidiFile) {
      */
     private fun initPercussionMusic(track: StandardMidiFile.Track) {
         // Create fake MSB for percussion (always fixed)
-        val fakeMSB = ControlChangeEvent(0, PERCUSSION_CHANNEL, MSB_CONTROLLER, defaultInstrument.first)
+        val fakeMSB = ControlChangeEvent(0, 0,0,0)
         val defaultLSB = ControlChangeEvent(0, PERCUSSION_CHANNEL, LSB_CONTROLLER, defaultPercussion.first)
         val defaultProgramChange = ProgramEvent(0, PERCUSSION_CHANNEL, defaultPercussion.second)
 

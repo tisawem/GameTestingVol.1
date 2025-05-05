@@ -17,11 +17,19 @@ import java.awt.GridLayout
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import java.io.File
+import javax.sound.midi.MidiDevice
 import javax.swing.*
 
 class HomePage(val game: KtxGame<KtxScreen>) : JFrame("GameTestingVol.1 ${getMessages("HomePage")}") {
     init {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
+
+        defaultCloseOperation = DO_NOTHING_ON_CLOSE
+addWindowListener(object : WindowAdapter() {
+    override fun windowClosing(e: WindowEvent?) {
+         Gdx.app.exit()
+    }
+})
     }
 
 
@@ -83,7 +91,12 @@ class HomePage(val game: KtxGame<KtxScreen>) : JFrame("GameTestingVol.1 ${getMes
         toolTipText = getMessages("Play_Tips")
     }
 
-    private val settings = JButton(getMessages("Settings")).usingGlobalProperties()
+    private val settings = JButton(getMessages("Settings")).apply {
+        usingGlobalProperties()
+        addActionListener {
+            Settings(this@HomePage,game)
+        }
+    }
 
     private val openMidiFile = JButton(getMessages("Open_MIDI_File")).apply {
         usingGlobalProperties()
@@ -117,6 +130,7 @@ class HomePage(val game: KtxGame<KtxScreen>) : JFrame("GameTestingVol.1 ${getMes
         usingGlobalProperties()
         addActionListener {
             this@HomePage.dispose()
+            Gdx.app.exit()
         }
     }
     private val buttons = JPanel(GridLayout(5, 1, 5, 5)).apply {
@@ -133,6 +147,16 @@ class HomePage(val game: KtxGame<KtxScreen>) : JFrame("GameTestingVol.1 ${getMes
     private val midiDeviceLabel = JLabel(getMessages("Output_MIDI_Device")).usingGlobalProperties()
     private val midiDevice = JComboBox(MidiDeviceManager.getAvailableMIDIOutputDevices().toTypedArray()).apply {
         font = Font(null, Font.PLAIN, 28)
+        toolTipText=getMessages("Output_MIDI_Device_Tips")+"  Microsoft MIDI Mapper  Microsoft GS Wavetable Synth"
+
+       addActionListener {
+          selectedItem?.let {
+              ConfigItem.MIDIOutputDevice.write(it.toString() )
+              deviceOrSf2PathTextArea.text=it.toString()
+          }
+       }
+
+
     }
 
     private val midiDevicePanel = JPanel(GridLayout(2, 1, 5, 5)).apply {
@@ -145,16 +169,22 @@ class HomePage(val game: KtxGame<KtxScreen>) : JFrame("GameTestingVol.1 ${getMes
        */
 
 
-    private val midiFileLabel = JLabel(getMessages("Opened_MIDI_File")).usingGlobalProperties()
+    private val midiFileLabel = JLabel(getMessages("Will_Used_MIDI_File")).usingGlobalProperties()
 
 
-    private val midiFilePathTextArea = JTextArea(ConfigItem.MIDIFile.load()).usingGlobalProperties()
+    private val midiFilePathTextArea = JTextArea(ConfigItem.MIDIFile.load()).apply {
+        usingGlobalProperties()
+        toolTipText=getMessages("Will_Used_MIDI_File_Tips")
+    }
     private val midiFilePathPane = JScrollPane(midiFilePathTextArea)
 
-    private val deviceLabel = JLabel(getMessages("Opened_Device")).usingGlobalProperties()
+    private val deviceLabel = JLabel(getMessages("Will_Used_Device")).usingGlobalProperties()
 
 
-    private val deviceOrSf2PathTextArea = JTextArea(ConfigItem.MIDIOutputDevice.load()).usingGlobalProperties()
+    private val deviceOrSf2PathTextArea = JTextArea(ConfigItem.MIDIOutputDevice.load()).apply {
+        usingGlobalProperties()
+        toolTipText=getMessages("Will_Used_Device_Tips")
+    }
     private val deviceOrSf2PathPane = JScrollPane(deviceOrSf2PathTextArea)
 
     private val statuePanel = JPanel().apply {
@@ -176,13 +206,6 @@ class HomePage(val game: KtxGame<KtxScreen>) : JFrame("GameTestingVol.1 ${getMes
 
     init {
 
-        defaultCloseOperation = DISPOSE_ON_CLOSE
-        addWindowListener(object : WindowAdapter() {
-            override fun windowClosed(e: WindowEvent?) {
-                Gdx.app.exit()
-            }
-
-        })
         add(mainPanel)
 
         pack() // 根据组件首选大小调整窗口

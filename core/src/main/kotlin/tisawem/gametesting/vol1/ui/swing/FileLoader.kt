@@ -63,7 +63,7 @@ object FileLoader {
         return when (fileChooser.showOpenDialog(null)) {
             JFileChooser.APPROVE_OPTION -> fileCheckingMethod(fileChooser.selectedFile)
             JFileChooser.CANCEL_OPTION -> Either.Left(Messages.getMessages("Canceled_Operation"))
-            else -> Either.Left("I_don't_know_what_happened_with_JFileChooser_window")
+            else -> Either.Left("JFileChooser_Window_Error")
 
         }
 

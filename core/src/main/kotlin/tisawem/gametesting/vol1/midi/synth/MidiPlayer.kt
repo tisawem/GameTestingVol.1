@@ -31,7 +31,7 @@ import kotlin.time.Duration
  * The [stop] method halts playback and releases associated resources. It ensures proper cleanup
  * of system resources such as sequencers, MIDI devices, or synthesizers.
  *
- * The [getPosition] method retrieves the current playback position as a [Duration] object. If playback
+ * The [getMicroSecondPosition] method retrieves the current playback position as a [Duration] object. If playback
  * is not active or the position cannot be determined, it returns null.
  *
  * Callbacks for [readyCallback] and [finishCallback] allow notification when playback is ready to start
@@ -59,6 +59,7 @@ interface MidiPlayer {
     //停止
     fun stop()
 
-    fun getPosition(): Duration?
+
+    fun getMicroSecondPosition(): Long?
 
 }

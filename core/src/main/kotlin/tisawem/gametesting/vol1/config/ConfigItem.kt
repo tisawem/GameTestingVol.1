@@ -40,6 +40,7 @@ enum class ConfigItem(val load: () -> String, val write: (String) -> Any?) {
     MIDIFile("MIDIFile"),
     MIDIOutputDevice("MIDI_Output_Device"),
     ScreenAheadPerform("ScreenAheadPerform"),
+    UsingGervillNotFluidSynthJava("Using_Gervill_Not_FluidSynthJava"),
 
 
     // 仅读设置项 (整个程序生命周期内不会去修改的配置项)

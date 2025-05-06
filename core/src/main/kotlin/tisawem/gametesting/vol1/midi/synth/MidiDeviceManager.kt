@@ -76,7 +76,10 @@ object MidiDeviceManager {
         finishCallback: (() -> Unit)? = null
     )= if ( getPreferredOutputDevice() != null) {
         SendSequenceToMidiDevice(midiFile,readyCallback,finishCallback)
-    } else {
+    } else if (ConfigItem.UsingGervillNotFluidSynthJava.load().toBoolean()){
+        GervillMidiPlayer(midiFile,readyCallback,finishCallback)
+    }
+    else {
         PlayFluidSynthConvertedWaveFile(midiFile,readyCallback,finishCallback)
     }
 }

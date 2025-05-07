@@ -21,10 +21,24 @@
 
 计划做一个MIDI事件可视化的程序，类似[midis2jam2](https://midis2jam2.xyz/)软件的超级缩水版。
 
-我在犹豫，还要不要继续开发......
+很抱歉项目又删了又重新推送。
 
-5月份挺迷茫的......
+目前来看，这个项目的程序设计，距离稳定，还有很长的路要走。
 
+个人原因，这个项目估计6月份又得无限期的搁置。
+
+另外，我的开发能力确实很弱，也对各个框架陌生。
+
+这个项目也大量的使用了语言模型生成的代码。
+
+
+为了解决素材和GPL许可证冲突的问题
+
+该项目将不会出现任何包含 `Tisawem東北項目` Logo 和 `Renkween` 形象的素材。Legacy文件夹也随即删除。
+
+第一个Release，由于包含了Renkween素材，也会随即删除。
+
+之后的一段时间，我再研究素材的问题。
 ## 该项目使用的包，框架，及主要功能
 
 | 包，框架                                                                                      | 主要功能                                          |
@@ -51,19 +65,8 @@
 |:------------------------------|:----------------------------------------------------------------------|
 | [CCLicense](assets/CCLicense) | 存放[Creative Commons](https://creativecommons.org/)的许可证                |
 | [Font](assets/Font)           | 存放字体文件，该项目使用[思源黑体](https://github.com/adobe-fonts/source-han-sans)    |
-| [Musician](assets/Musician)   |                                                                       |
+| [Musician](assets/Musician)   | 存放角色（演奏席位）的素材                                                         |
 | [ui](assets/ui)               | 使用[gdx-liftoff](https://github.com/libgdx/gdx-liftoff)创建项目时，添加的GUI资源。 |
-
-[Musician](assets/Musician) 文件夹，存放着版权素材。
-
-素材绑定的代码，开源。**但是，素材不开源。** 原因是：
-
-* 代码：GPL许可证下随便玩。
-* 素材的人物形象：我的！我的！不共享！严格保护！
-
-点击查看[Renkween素材的许可证](assets/Musician/Renkween/LICENSE.MD)
-
-所以，最好准备自己的素材。
 
 ## 平台
 

@@ -60,7 +60,7 @@ class Settings(frame: JFrame,val game: KtxGame<KtxScreen>): JDialog(frame,getMes
     }
 
     /*
-    West
+    Center
      */
 
 
@@ -68,7 +68,7 @@ class Settings(frame: JFrame,val game: KtxGame<KtxScreen>): JDialog(frame,getMes
     private val engineLabel=JLabel(getMessages("SoundFont_Engine")).usingGlobalProperties()
 
 
-private val westGroup= JPanel(GridLayout(4,1)).apply{
+private val centerGroup= JPanel(GridLayout(4,1)).apply{
 
 
     val using=Config.UsingGervill.load().toBoolean()
@@ -163,7 +163,7 @@ private val southPanel= JPanel(GridLayout(2,1)).apply {
     private val mainPanel= JPanel(BorderLayout(10,10)).apply {
         border = BorderFactory.createEmptyBorder(10, 10, 10, 10) // 添加边缘边距
         add(backButton, BorderLayout.NORTH)
-        add(westGroup, BorderLayout.WEST)
+        add(centerGroup, BorderLayout.CENTER)
         add(eastPanel, BorderLayout.EAST)
         add(southPanel, BorderLayout.SOUTH)
     }

@@ -1,9 +1,8 @@
 package tisawem.gametesting.vol1.midi.synth
 
-import tisawem.gametesting.vol1.config.ConfigItem
+import tisawem.gametesting.vol1.config.Config
 import tisawem.gametesting.vol1.ui.swing.ExceptionDialog
 import java.io.File
-import java.lang.UnsupportedOperationException
 import javax.sound.midi.*
 
 class GervillMidiPlayer(
@@ -17,7 +16,7 @@ class GervillMidiPlayer(
     private var synthesizer: Synthesizer? = try {
         MidiSystem.getSynthesizer().apply {
             unloadAllInstruments(defaultSoundbank)
-            loadAllInstruments( MidiSystem.getSoundbank(File(ConfigItem.MIDIOutputDevice.load())))
+            loadAllInstruments( MidiSystem.getSoundbank(File(Config.MIDIOutputDevice.load())))
         }
     }catch (e: Throwable){
         ExceptionDialog(e,true,"Gervill合成器初始化错误。")

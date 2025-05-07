@@ -20,9 +20,8 @@ package tisawem.gametesting.vol1.i18n
 
 import com.ibm.icu.util.ULocale
 import com.ibm.icu.util.UResourceBundle
-import tisawem.gametesting.vol1.config.ConfigItem
+import tisawem.gametesting.vol1.config.Config
 import tisawem.gametesting.vol1.ui.swing.ExceptionDialog
-import java.util.MissingResourceException
 
 
 /**
@@ -55,7 +54,7 @@ object Messages {
 
     private fun ensureBundle() {
         // 获取配置的语言，若为空白，将使用系统默认语言
-        val configLanguage = ConfigItem.Language.load().ifEmpty { ULocale.getDefault().language }
+        val configLanguage = Config.Language.load().ifEmpty { ULocale.getDefault().language }
 
 
         if (bundle == null || currentLanguage != configLanguage) {
@@ -68,7 +67,7 @@ object Messages {
                           */
 
                         bundle = UResourceBundle.getBundleInstance(
-                            ConfigItem.LanguageResourcePath.load(), configLanguage, Messages.javaClass.classLoader
+                            Config.LanguageResourcePath.load(), configLanguage, Messages.javaClass.classLoader
                         )
                         currentLanguage = configLanguage
 
@@ -88,10 +87,10 @@ object Messages {
             true,
             """
 1、MissingResourceException
-    a.  ${ConfigItem.LanguageResourcePath.load()}
+    a.  ${Config.LanguageResourcePath.load()}
         该类路径下没有messages.properties文件
 
-    b.  messages.properties 文件 没有 $key 对应的字符串.
+    b.  messages.properties 文件没有 $key 对应的字符串.
 
 以下错误需要检查源代码，它们不应该抛出。
     1、NullPointerException

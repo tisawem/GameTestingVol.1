@@ -1,13 +1,8 @@
 package tisawem.gametesting.vol1.midi.synth
 
-import tisawem.gametesting.vol1.config.ConfigItem
 import tisawem.gametesting.vol1.ui.swing.ExceptionDialog
 import java.io.File
-import java.lang.UnsupportedOperationException
 import javax.sound.midi.*
-import kotlin.time.Duration
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
 /**
  * A class responsible for sending a MIDI sequence to a MIDI output device for playback.

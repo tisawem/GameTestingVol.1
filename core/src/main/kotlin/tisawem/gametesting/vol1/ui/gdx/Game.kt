@@ -18,11 +18,9 @@
 
 package tisawem.gametesting.vol1.ui.gdx
 
-import com.badlogic.gdx.Gdx
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
 import tisawem.gametesting.vol1.ui.gdx.screen.HomePageIDLE
-import tisawem.gametesting.vol1.ui.swing.HomePage
 
 
 /**
@@ -30,7 +28,7 @@ import tisawem.gametesting.vol1.ui.swing.HomePage
  *
  * 通常情况下，各个屏幕只有[Game]实例是互相传来传去
  *
- * 配置读写在[tisawem.gametesting.vol1.config.ConfigItem]操作
+ * 配置读写在[tisawem.gametesting.vol1.config.Config]操作
  *
  * 通常，各个Screen在切换屏幕时，会销毁自己的实例，这很重要
  */

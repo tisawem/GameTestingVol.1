@@ -1,13 +1,13 @@
 package tisawem.gametesting.vol1.ui.gdx
 
 import com.badlogic.gdx.Gdx
-import tisawem.gametesting.vol1.config.ConfigItem
-import tisawem.gametesting.vol1.config.ConfigItemToolkit
+import tisawem.gametesting.vol1.config.Config
+import tisawem.gametesting.vol1.config.ConfigToolkit
 import tisawem.gametesting.vol1.ui.swing.ExceptionDialog
 
 object SwitchGraphicsMode {
     /**
-     * Run Gdx.graphics.setWindowedMode() function based on the resolution specified in [ConfigItem.WindowedResolution].
+     * Run Gdx.graphics.setWindowedMode() function based on the resolution specified in [Config.WindowedResolution].
      *
      * @return `true` if the windowed mode was successfully set; `false` if an error occurred during the process.
      */
@@ -15,7 +15,7 @@ object SwitchGraphicsMode {
         if (Gdx.graphics==null) {
             throw IllegalStateException("请启动Lwjgl3Application实例后，再调用此函数。")
         }
-        val (w,h)= ConfigItemToolkit.getWindowedResolution()
+        val (w,h)= ConfigToolkit.getWindowedResolution()
 
           Gdx.graphics.setWindowedMode(w,h)
     }catch (e: Throwable){

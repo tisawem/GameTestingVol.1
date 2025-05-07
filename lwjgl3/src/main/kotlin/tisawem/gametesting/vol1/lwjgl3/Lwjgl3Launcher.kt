@@ -2,16 +2,8 @@
 
 package tisawem.gametesting.vol1.lwjgl3
 
-import com.badlogic.gdx.ApplicationAdapter
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
-import com.badlogic.gdx.scenes.scene2d.InputListener
-import ktx.app.KtxGame
-import ktx.app.KtxScreen
-import tisawem.gametesting.vol1.config.ConfigItem
-import tisawem.gametesting.vol1.config.ConfigItemToolkit
 import tisawem.gametesting.vol1.ui.swing.ExceptionDialog
 import tisawem.gametesting.vol1.ui.gdx.Game
 

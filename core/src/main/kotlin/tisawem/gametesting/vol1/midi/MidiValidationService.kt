@@ -21,7 +21,7 @@ package tisawem.gametesting.vol1.midi
 import arrow.core.Either
 import org.wysko.kmidi.midi.reader.StandardMidiFileReader
 import org.wysko.kmidi.midi.reader.readFile
-import tisawem.gametesting.vol1.config.ConfigItem
+import tisawem.gametesting.vol1.config.Config
 import tisawem.gametesting.vol1.ui.swing.ExceptionDialog
 import tisawem.gametesting.vol1.file.FileCheckingMethod
 import tisawem.gametesting.vol1.i18n.Messages
@@ -40,7 +40,7 @@ object MidiValidationService {
         try {
 
             when (val midiOrReason=
-                FileCheckingMethod.MIDIFile.method(File(ConfigItem.MIDIFile.load()))
+                FileCheckingMethod.MIDIFile.method(File(Config.MIDIFile.load()))
             ) {
                 is Either.Left<*> -> errors.add(midiOrReason.leftOrNull().toString())//代表了路径空，文件无效，文件没有Note事件
                 is Either.Right<*> -> {}//到这里已经是有效文件了
@@ -49,7 +49,7 @@ object MidiValidationService {
 
             //如果不是MIDI OUT设备名称，则尝试视为SoundFont文件路径打开
             if (MidiDeviceManager.getPreferredOutputDevice() == null) {
-                when (FileCheckingMethod.SoundFont.method(File(ConfigItem.MIDIOutputDevice.load()))) {
+                when (FileCheckingMethod.SoundFont.method(File(Config.MIDIOutputDevice.load()))) {
                     is Either.Left<*> ->errors.add(Messages.getMessages("Remind_User_Set_Output_MIDI_Device"))
                     is Either.Right<*> -> {}
                 }
@@ -67,7 +67,7 @@ object MidiValidationService {
      */
     fun createMidiEventProcess()=  try {
 
-        val file = FileCheckingMethod.MIDIFile.method(File(ConfigItem.MIDIFile.load())).getOrNull() ?: return null
+        val file = FileCheckingMethod.MIDIFile.method(File(Config.MIDIFile.load())).getOrNull() ?: return null
 
         ProcessedMIDIData(StandardMidiFileReader().readFile(file))
     } catch (e: Throwable) {

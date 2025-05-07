@@ -3,9 +3,8 @@ package tisawem.gametesting.vol1.midi.synth
 import org.jjazz.fluidsynthjava.api.FluidSynthJava
 
 import java.io.File
-import tisawem.gametesting.vol1.config.ConfigItem
+import tisawem.gametesting.vol1.config.Config
 import tisawem.gametesting.vol1.ui.swing.ExceptionDialog
-import java.lang.UnsupportedOperationException
 import javax.sound.sampled.*
 
 class PlayFluidSynthConvertedWaveFile(
@@ -19,7 +18,7 @@ class PlayFluidSynthConvertedWaveFile(
             it.deleteOnExit()
             FluidSynthJava().apply {
                 open(false)
-                loadSoundFont(File(ConfigItem.MIDIOutputDevice.load()))
+                loadSoundFont(File(Config.MIDIOutputDevice.load()))
                 generateWavFile(midiFile, it)
                 close()
             }

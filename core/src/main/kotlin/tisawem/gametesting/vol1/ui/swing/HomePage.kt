@@ -4,20 +4,18 @@ import arrow.core.Either
 import com.badlogic.gdx.Gdx
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
-import tisawem.gametesting.vol1.config.ConfigItem
+import tisawem.gametesting.vol1.config.Config
 import tisawem.gametesting.vol1.file.ExtensionFilter
 import tisawem.gametesting.vol1.file.FileCheckingMethod
 import tisawem.gametesting.vol1.i18n.Messages.getMessages
 import tisawem.gametesting.vol1.midi.synth.MidiDeviceManager
 import java.awt.BorderLayout
 import java.awt.Dimension
-import java.awt.FlowLayout
 import java.awt.Font
 import java.awt.GridLayout
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import java.io.File
-import javax.sound.midi.MidiDevice
 import javax.swing.*
 
 class HomePage(val game: KtxGame<KtxScreen>) : JFrame("GameTestingVol.1 ${getMessages("HomePage")}") {
@@ -105,7 +103,7 @@ addWindowListener(object : WindowAdapter() {
            loopingAskUserForFileOrAbandon({FileLoader.loadingFileFromJFileChooser(
                ExtensionFilter.MIDIFile.filter,
                FileCheckingMethod.MIDIFile.method
-           )})?.let { ConfigItem.MIDIFile.write(it.canonicalPath)
+           )})?.let { Config.MIDIFile.write(it.canonicalPath)
            midiFilePathTextArea.text=it.canonicalPath
 
            }
@@ -119,7 +117,7 @@ addWindowListener(object : WindowAdapter() {
             loopingAskUserForFileOrAbandon({FileLoader.loadingFileFromJFileChooser(
                 ExtensionFilter.SoundFont.filter,
                 FileCheckingMethod.SoundFont.method
-            )})?.let { ConfigItem.MIDIOutputDevice.write(it.canonicalPath)
+            )})?.let { Config.MIDIOutputDevice.write(it.canonicalPath)
                 deviceOrSf2PathTextArea.text=it.canonicalPath
 
             }
@@ -151,7 +149,7 @@ addWindowListener(object : WindowAdapter() {
 
        addActionListener {
           selectedItem?.let {
-              ConfigItem.MIDIOutputDevice.write(it.toString() )
+              Config.MIDIOutputDevice.write(it.toString() )
               deviceOrSf2PathTextArea.text=it.toString()
           }
        }
@@ -172,7 +170,7 @@ addWindowListener(object : WindowAdapter() {
     private val midiFileLabel = JLabel(getMessages("Will_Used_MIDI_File")).usingGlobalProperties()
 
 
-    private val midiFilePathTextArea = JTextArea(ConfigItem.MIDIFile.load()).apply {
+    private val midiFilePathTextArea = JTextArea(Config.MIDIFile.load()).apply {
         usingGlobalProperties()
         toolTipText=getMessages("Will_Used_MIDI_File_Tips")
     }
@@ -181,7 +179,7 @@ addWindowListener(object : WindowAdapter() {
     private val deviceLabel = JLabel(getMessages("Will_Used_Device")).usingGlobalProperties()
 
 
-    private val deviceOrSf2PathTextArea = JTextArea(ConfigItem.MIDIOutputDevice.load()).apply {
+    private val deviceOrSf2PathTextArea = JTextArea(Config.MIDIOutputDevice.load()).apply {
         usingGlobalProperties()
         toolTipText=getMessages("Will_Used_Device_Tips")
     }

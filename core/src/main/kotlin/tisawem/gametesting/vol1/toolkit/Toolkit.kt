@@ -1,11 +1,12 @@
-package tisawem.gametesting.vol1.config
+package tisawem.gametesting.vol1.toolkit
 
+import tisawem.gametesting.vol1.config.Config
 import tisawem.gametesting.vol1.ui.swing.ExceptionDialog
-import kotlin.collections.component1
-import kotlin.collections.component2
+import java.awt.Graphics2D
+import java.awt.RenderingHints
+import java.awt.image.BufferedImage
 
-
-object ConfigToolkit {
+object Toolkit {
 
     /**
      * Retrieves the windowed resolution as a pair of integers representing the width and height.
@@ -14,7 +15,7 @@ object ConfigToolkit {
      * The expected format for the configuration value is `<width>_<height>`, where both width and height are positive integers.
      * If the value is correctly formatted and valid, it is returned as a `Pair<Int, Int>`.
      *
-     * If any of the following issues occur, an [ExceptionDialog] is displayed with detailed error information:
+     * If any of the following issues occur, an [tisawem.gametesting.vol1.ui.swing.ExceptionDialog] is displayed with detailed error information:
      * - A [NumberFormatException] or [IndexOutOfBoundsException] is thrown if the configuration value is not in the correct format or contains invalid numbers.
      * - A [NoSuchElementException] is thrown if the `WindowedResolution` setting is missing from the `config.properties` file.
      *
@@ -73,5 +74,36 @@ Pair(x,y)
 
         return "$a.$b"
 
+    }
+
+
+    /**
+     * 将输入的 BufferedImage 按照指定的 scale 缩放，并返回新的 BufferedImage
+     *
+     * @param image 原始图像
+     * @param scale 缩放比例（例如 0.5f 表示缩小为原来的一半，2.0f 表示放大两倍）
+     * @return 缩放后的 BufferedImage
+     */
+    fun getScaledBufferedImage(image: BufferedImage, scale: Float): BufferedImage {
+        if (scale<=0) {
+            ExceptionDialog(IllegalArgumentException(),true,"图片缩放倍数必须是正数\n该函数返回 $image")
+            return image
+        }
+
+        // 计算新的宽高
+        val newWidth = (image.width * scale).toInt()
+        val newHeight = (image.height * scale).toInt()
+
+        // 创建一个新的 BufferedImage，类型使用原图的类型
+        val scaledImage = BufferedImage(newWidth, newHeight, image.type.takeIf { it != 0 } ?: BufferedImage.TYPE_INT_ARGB)
+
+        // 获取 Graphics2D
+        val g2d: Graphics2D = scaledImage.createGraphics()
+
+        // 绘制缩放后的图像
+        g2d.drawImage(image, 0, 0, newWidth, newHeight, null)
+        g2d.dispose()
+
+        return scaledImage
     }
 }

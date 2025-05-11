@@ -2,7 +2,7 @@ package tisawem.gametesting.vol1.ui.gdx
 
 import com.badlogic.gdx.Gdx
 import tisawem.gametesting.vol1.config.Config
-import tisawem.gametesting.vol1.config.ConfigToolkit
+import tisawem.gametesting.vol1.toolkit.Toolkit
 import tisawem.gametesting.vol1.ui.swing.ExceptionDialog
 
 object SwitchGraphicsMode {
@@ -15,7 +15,7 @@ object SwitchGraphicsMode {
         if (Gdx.graphics==null) {
             throw IllegalStateException("请启动Lwjgl3Application实例后，再调用此函数。")
         }
-        val (w,h)= ConfigToolkit.getWindowedResolution()
+        val (w,h)= Toolkit.getWindowedResolution()
 
           Gdx.graphics.setWindowedMode(w,h)
     }catch (e: Throwable){

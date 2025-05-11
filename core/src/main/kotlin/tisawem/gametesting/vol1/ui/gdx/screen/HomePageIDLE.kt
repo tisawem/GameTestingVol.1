@@ -37,16 +37,15 @@ import kotlin.math.min
 class HomePageIDLE(val game: KtxGame<KtxScreen>) : KtxScreen{
     val batch= SpriteBatch()
     val viewport= FitViewport(3840f,2160f)
-    var backgroundTexture:Texture?=null
-    var background:Sprite?=null
 
 
-    /**
+
+    /*
      * 各种Changed的字段，供[tisawem.gametesting.vol1.ui.swing.Settings]修改
      *
      * 非GDX线程内的代码，不便执行GDX的代码，所以通过更改标志的方式，通知并响应更改。
      */
-  companion object{
+
       /**
        * 当修改语言后，将重新创建HomePageIDLE实例，重新渲染字体
        *
@@ -62,7 +61,6 @@ class HomePageIDLE(val game: KtxGame<KtxScreen>) : KtxScreen{
         var backgroundChanged=true
 
 
-  }
 
     /**
      * 当GDX窗口被叉掉关闭时，也顺便关闭homePage实例
@@ -75,6 +73,16 @@ class HomePageIDLE(val game: KtxGame<KtxScreen>) : KtxScreen{
 
     }
 
+    override fun resize(width: Int, height: Int) {
+        viewport.update(width,height,true)
+    }
+
+
+    //上面是样板代码，下面是资源
+
+
+    var backgroundTexture:Texture?=null
+    var background:Sprite?=null
 
 
 
@@ -91,9 +99,13 @@ class HomePageIDLE(val game: KtxGame<KtxScreen>) : KtxScreen{
 
 
     override fun render(delta: Float) {
-checkStatueChange()
         ScreenUtils.clear(Color.TAN)
+checkStatueChange()
+
+
+        batch.projectionMatrix = viewport.camera.combined
         batch.begin()
+
         background?.draw(batch)
 
 
@@ -115,7 +127,7 @@ checkStatueChange()
         if (backgroundChanged){
             backgroundChanged=false
             try {
-               backgroundTexture=Texture(Config.PerformBackgroundImage.load())
+               backgroundTexture=Texture(Gdx.files.internal(Config.PerformBackgroundImage.load())!!)
 
             }catch (_: Throwable){
                 try {
@@ -127,12 +139,25 @@ checkStatueChange()
                 }
             }
 
-            try {
-                val rate= min(viewport.worldWidth/backgroundTexture!!.width,viewport.worldHeight/backgroundTexture!!.height)
-                background= Sprite(backgroundTexture)
-                background?.setScale(rate)
-            }catch (_: Throwable){
+            backgroundTexture?.let { texture ->
+                // 计算缩放比例
+                val scaleX = viewport.worldWidth / texture.width.toFloat()
+                val scaleY = viewport.worldHeight / texture.height.toFloat()
+                val scale = min(scaleX, scaleY)
 
+                background = Sprite(texture)
+
+                    .apply {
+
+                    // 设置缩放
+                    setScale(scale)
+
+                    // 先将原点设为中心
+                    setOriginCenter()
+
+                    // 将sprite的中心放到viewport的中心
+                    setCenter(viewport.worldWidth / 2f, viewport.worldHeight / 2f)
+                }
             }
 
 
@@ -143,6 +168,7 @@ checkStatueChange()
 
     override fun dispose() {
        homePage.dispose()
+        stage.disposeSafely()//不用关闭batch，stage已经把它关了
         backgroundTexture?.disposeSafely()
 
     }

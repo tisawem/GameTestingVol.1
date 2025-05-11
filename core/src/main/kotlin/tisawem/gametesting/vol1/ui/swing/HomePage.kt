@@ -9,6 +9,7 @@ import tisawem.gametesting.vol1.file.ExtensionFilter
 import tisawem.gametesting.vol1.file.FileCheckingMethod
 import tisawem.gametesting.vol1.i18n.Messages.getMessages
 import tisawem.gametesting.vol1.midi.synth.MidiDeviceManager
+import tisawem.gametesting.vol1.ui.swing.FileLoader.loopingAskUserForFileOrAbandon
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.Font
@@ -56,27 +57,7 @@ addWindowListener(object : WindowAdapter() {
             return this
         }
 
-        tailrec fun loopingAskUserForFileOrAbandon(fileObtainMethod: ()->Either<String, File>  ):File? =when (val file=fileObtainMethod()) {
-            is Either.Left<*> -> {
-                val result = JOptionPane.showConfirmDialog(
-                    null, // 父组件
-                    "${file.leftOrNull()}\n${getMessages("Open_Again")}",
-                    "", // 对话框标题
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.WARNING_MESSAGE
-                )
-
-                when (result) {
-                    JOptionPane.YES_OPTION ->loopingAskUserForFileOrAbandon(fileObtainMethod)
-                    else -> null
-                }
-            }
-
-            is Either.Right<*> -> {
-                  file.getOrNull()
-            }
-        }
-    }
+      }
 
 
     /*
@@ -101,6 +82,7 @@ addWindowListener(object : WindowAdapter() {
         toolTipText = getMessages("Open_MIDI_File_Tips")
         addActionListener {
            loopingAskUserForFileOrAbandon({FileLoader.loadingFileFromJFileChooser(
+               Config.MIDIFile.load(),
                ExtensionFilter.MIDIFile.filter,
                FileCheckingMethod.MIDIFile.method
            )})?.let { Config.MIDIFile.write(it.canonicalPath)
@@ -115,6 +97,7 @@ addWindowListener(object : WindowAdapter() {
         toolTipText = getMessages("Open_SoundFont_Tips")
         addActionListener {
             loopingAskUserForFileOrAbandon({FileLoader.loadingFileFromJFileChooser(
+                Config.MIDIOutputDevice.load(),
                 ExtensionFilter.SoundFont.filter,
                 FileCheckingMethod.SoundFont.method
             )})?.let { Config.MIDIOutputDevice.write(it.canonicalPath)
@@ -185,7 +168,7 @@ addWindowListener(object : WindowAdapter() {
     }
     private val deviceOrSf2PathPane = JScrollPane(deviceOrSf2PathTextArea)
 
-    private val statuePanel = JPanel().apply {
+    private val statuePanel = JPanel(/*没把布局放在这里的原因是：BoxLayout需要传入statuePanel的实例*/).apply {
         layout = BoxLayout(this, BoxLayout.Y_AXIS)
         add(midiFileLabel)
         add(midiFilePathPane)

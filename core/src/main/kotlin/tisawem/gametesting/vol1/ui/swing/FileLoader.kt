@@ -2,8 +2,10 @@ package tisawem.gametesting.vol1.ui.swing
 
 import arrow.core.Either
 import tisawem.gametesting.vol1.i18n.Messages
+import tisawem.gametesting.vol1.i18n.Messages.getMessages
 import java.io.File
 import javax.swing.JFileChooser
+import javax.swing.JOptionPane
 import javax.swing.UIManager
 import javax.swing.filechooser.FileFilter
 
@@ -47,6 +49,7 @@ object FileLoader {
      * @return 成功打开时，返回Right(File)，否则返回Left(String)
      */
     fun loadingFileFromJFileChooser(
+        currentPath: String="",
         filter: FileFilter?,
         fileCheckingMethod: (File) -> Either<String, File> = { Either.Right(it) }
     ): Either<String, File> {
@@ -55,7 +58,7 @@ object FileLoader {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
 
 
-        val fileChooser = JFileChooser(Messages.getMessages("Please_Select_A_MIDI_File")).apply {
+        val fileChooser = JFileChooser(currentPath).apply {
             setFileSelectionMode(JFileChooser.FILES_ONLY)
             setFileFilter(filter)
         }
@@ -70,5 +73,25 @@ object FileLoader {
 
     }
 
+    tailrec fun loopingAskUserForFileOrAbandon(fileObtainMethod: ()->Either<String, File>  ):File? =when (val file=fileObtainMethod()) {
+        is Either.Left<*> -> {
+            val result = JOptionPane.showConfirmDialog(
+                null, // 父组件
+                "${file.leftOrNull()}\n${getMessages("Open_Again")}",
+                "", // 对话框标题
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE
+            )
+
+            when (result) {
+                JOptionPane.YES_OPTION ->loopingAskUserForFileOrAbandon(fileObtainMethod)
+                else -> null
+            }
+        }
+
+        is Either.Right<*> -> {
+            file.getOrNull()
+        }
+    }
 
 }

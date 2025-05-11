@@ -5,15 +5,17 @@ import org.jjazz.fluidsynthjava.api.FluidSynthJava
 import java.io.File
 import tisawem.gametesting.vol1.config.Config
 import tisawem.gametesting.vol1.ui.swing.ExceptionDialog
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.FutureTask
 import javax.sound.sampled.*
-
 class PlayFluidSynthConvertedWaveFile(
     override val midiFile: File,
     override val readyCallback: (() -> Unit)?,
     override val finishCallback: (() -> Unit)?
 ) : MidiPlayer {
 
-    private val wavFile: File by lazy {
+    // 使用FutureTask来异步生成WAV文件
+    private val wavFile: FutureTask<File> = FutureTask<File> {
         File.createTempFile(midiFile.nameWithoutExtension + "_(Converted)", ".wav").let {
             it.deleteOnExit()
             FluidSynthJava().apply {
@@ -26,23 +28,30 @@ class PlayFluidSynthConvertedWaveFile(
         }
     }
 
+    // 在构造函数中就启动线程生成WAV文件
+    init {
+        Thread(wavFile, "Wav-Generator-${midiFile.nameWithoutExtension}").apply {
+            isDaemon = true  // 设为守护线程，不阻止JVM退出
+            start()
+        }
+    }
+
     private var clip: Clip? = null
     private var audioInputStream: AudioInputStream? = null
     private var isPlaying = false
 
-
     override fun play() {
         if (isPlaying) {
-            ExceptionDialog(IllegalStateException(), true, "$this\n\n该实例已经在播放了，或者合成器初始化错误。")
+            ExceptionDialog(IllegalStateException(), true, "$this\n\n该实例已经播放了。")
             return
         }
 
         Thread {
             try {
-                // 确保 WAV 文件已创建（通过访问 wavFile 触发 lazy 初始化）
-                val waveFileToPlay = wavFile
+                // 等待WAV文件生成完成并获取结果
+                // 如果生成过程中有异常，get()会抛出ExecutionException
 
-                audioInputStream = AudioSystem.getAudioInputStream(waveFileToPlay)
+                audioInputStream = AudioSystem.getAudioInputStream(wavFile.get())
                 clip = AudioSystem.getClip()
 
                 clip?.addLineListener { event ->
@@ -66,22 +75,33 @@ class PlayFluidSynthConvertedWaveFile(
                 clip?.start()
 
             } catch (e: Exception) {
-                ExceptionDialog(e, true, "播放器崩了，或者回调函数出错。")
+
+                ExceptionDialog(e, true, """
+1、ExecutionException
+    生成Wave文件时出现错误
+
+其他错误为未知错误，可能是音频播放出现意外，或者执行回调函数时抛出错误。
+                """.trimIndent())
 
                 close()
                 finishCallback?.invoke()
             }
-        }.start()
+        }.apply {
+            name = "WavFile-Player-${midiFile.nameWithoutExtension}"
+            start()
+        }
     }
 
-    override fun stop() =if (isPlaying)  clip?.stop()?: Unit else Unit
+    override fun stop() {
+        if (isPlaying) clip?.stop()
+    }
 
     override fun getMicroSecondPosition(): Long? = if (isPlaying) clip?.microsecondPosition else null
 
     private fun close() = try {
-            clip?.close()
-            audioInputStream?.close()
-            clip = null
-            audioInputStream = null
-        } catch (_: Throwable) { }
+        clip?.close()
+        audioInputStream?.close()
+        clip = null
+        audioInputStream = null
+    } catch (_: Throwable) { }
 }

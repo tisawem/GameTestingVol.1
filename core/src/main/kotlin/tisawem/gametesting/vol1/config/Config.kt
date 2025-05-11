@@ -42,6 +42,7 @@ enum class Config(val load: () -> String, val write: (String) -> Any?) {
     UsingGervill("Using_Gervill"),
     FullScreen("FullScreen"),
     ScreenAdvancedTime("Screen_Advanced_Time"),
+    PerformBackgroundImage("Perform_Background_Image"),
 
 
     // 仅读设置项 (整个程序生命周期内不会去修改的配置项)

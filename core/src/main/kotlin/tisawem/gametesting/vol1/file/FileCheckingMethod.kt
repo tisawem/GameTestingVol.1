@@ -25,6 +25,7 @@ import org.wysko.kmidi.midi.reader.StandardMidiFileReader
 import org.wysko.kmidi.midi.reader.readFile
 import tisawem.gametesting.vol1.i18n.Messages.getMessages
 import java.io.File
+import javax.imageio.ImageIO
 import javax.sound.midi.MidiSystem
 
 /**
@@ -35,46 +36,72 @@ import javax.sound.midi.MidiSystem
  * @param method 一个函数，接收一个[java.io.File]，返回[Right]（File）或 [Left]（String）
  */
 enum class FileCheckingMethod(val method: (File) -> Either<String, File>) {
-    MIDIFile({ it ->
-        try {
-            if (it.path.isBlank()) {
-                Left(getMessages("MIDI_File_Path_Is_Blank"))
-            } else if (!it.isFile) {
-                Left(getMessages("MIDI_File_Path_Not_Point_To_File"))
-            } else {
-                MidiSystem.getSequence(it)//是不是javax.sound.midi承认的序列
+    MIDIFile( {
+     try {
+         MidiSystem.getSequence(it)//是不是javax.sound.midi承认的序列
 
 
-                //是不是kmidi承认的MIDI文件，若是，检查是否有Arc事件。
+         //是不是kmidi承认的MIDI文件，若是，检查是否有Arc事件。
 
-                if (StandardMidiFileReader().readFile(it).tracks.any { it.arcs.isNotEmpty() }) Right(it) else Left(
-                    getMessages("This_MIDI_File_Without_Note")
-                )//有，返回文件，否则提示该文件无音符。
+         if (StandardMidiFileReader().readFile(it).tracks.any { track -> track.arcs.isNotEmpty() }) null
+         else getMessages("MIDI_File_Without_Note")//有，返回文件，否则提示该文件无音符。
 
-            }
+     }catch (_: Throwable){
+         getMessages("Cannot_Load_This_File")
+     }
+    },true),
+    SoundFont(issue = {
 
-        } catch (_: Throwable) {
-            Left(getMessages("Cannot_Load_This_MIDI_File"))
-        }
-    }),
-    SoundFont({
-        if (it.path.isBlank()) {
-            Left(getMessages("SoundFont_File_Path_Is_Blank"))
-        }
-        if (!it.isFile) {
-            Left(getMessages("SoundFont_File_Path_Not_Point_To_File"))
-        }
         val instance = FluidSynthJava()//创建FluidSynthJava实例
         try {
             instance.open(false)
-            instance.unloadSoundfont(instance.loadSoundFont(it))//读取（会返回SoundFont ID）再关闭
-            Right(it)
-        } catch (_: Throwable) {
-            Left(getMessages("Cannot_Load_This_SoundFont_File"))
-        } finally {
+            instance.loadSoundFont(it)//尝试读取
+            null
+        } catch (_: Throwable){
+            getMessages("Cannot_Load_This_File")
+        }finally {
 //关闭实例
             instance.close()
         }
-    })
+    }),
+    Image( {it: File ->
+        try {
+            ImageIO.read(it)!!
+            null
+        }catch (_: Throwable){
+            getMessages("Cannot_Load_This_File")
+        }
+    }as (File) -> String?);
 
+
+    /**
+     * ！！！！！！！！！！特别注意事项！！！！！！！！！！！
+     *
+     * notForPrimaryConstructor，它是占位用的，以防构造器冲突
+     *
+     * Overload resolution ambiguity between candidates:
+     * constructor(method: (File) -> Either<String, File>): FileCheckingMethod
+     * constructor(issue: (File) -> String?): FileCheckingMethod
+     *
+     * 注意枚举常量的写法：[MIDIFile]，[SoundFont]，[Image]
+     * 一个传入了notForPrimaryConstructor形参，一个使用 issue = 指定x形参，一个使用强制转换 as (File) -> String?
+     * 才会让编译器不报错
+     *
+     * ！！！！！！！！！！！！！！！！！！！！！！！！！！！
+     */
+    constructor( issue: (File) -> String?, notForPrimaryConstructor:Boolean=true) : this(method = {
+        if (it.path.isBlank()) {
+            Left(getMessages("File_Path_Is_Blank"))
+        }
+        if (!it.isFile) {
+            Left(getMessages("Path_Not_Point_To_File"))
+        }
+
+
+        issue(it)?.let { issue ->
+            Left(issue)
+        }?: Right(it)
+
+
+    })
 }

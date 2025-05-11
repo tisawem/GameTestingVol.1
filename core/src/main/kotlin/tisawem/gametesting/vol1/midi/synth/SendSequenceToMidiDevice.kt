@@ -65,7 +65,7 @@ open class SendSequenceToMidiDevice(
 
     override fun play() {
         if (isPlaying||sequencer==null){
-            ExceptionDialog(IllegalStateException(),true,"$this\n\n该实例已经在播放了，或者合成器初始化错误。")
+            ExceptionDialog(IllegalStateException(),true,"$this\n\n该实例已经在播放了。")
             return
         }
 

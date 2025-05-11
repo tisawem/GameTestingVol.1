@@ -1,18 +1,29 @@
 package tisawem.gametesting.vol1.ui.swing
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Texture
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
 import tisawem.gametesting.vol1.config.Config
+import tisawem.gametesting.vol1.file.ExtensionFilter
+import tisawem.gametesting.vol1.file.FileCheckingMethod
 import tisawem.gametesting.vol1.i18n.Messages
 import tisawem.gametesting.vol1.i18n.Messages.getMessages
+import tisawem.gametesting.vol1.ui.gdx.restartGameInstance
 import tisawem.gametesting.vol1.ui.gdx.screen.HomePageIDLE
+import tisawem.gametesting.vol1.ui.swing.FileLoader.loopingAskUserForFileOrAbandon
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.Font
 import java.awt.GridLayout
+import java.io.File
+import javax.imageio.ImageIO
 import javax.swing.AbstractButton
 import javax.swing.BorderFactory
+import javax.swing.BoxLayout
 import javax.swing.ButtonGroup
+import javax.swing.Icon
+import javax.swing.ImageIcon
 import javax.swing.JButton
 import javax.swing.JCheckBox
 import javax.swing.JComboBox
@@ -22,6 +33,7 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JRadioButton
 import javax.swing.JSlider
+import javax.swing.JTextArea
 import javax.swing.UIManager
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -57,6 +69,41 @@ class Settings(frame: JFrame,val game: KtxGame<KtxScreen>): JDialog(frame,getMes
             dispose()
         }
 
+    }
+
+    /*
+     * West
+     */
+
+    private val openImageButton= JButton(getMessages("Open_Background_Image")).apply {
+        usingGlobalProperties()
+
+        addActionListener {
+            loopingAskUserForFileOrAbandon {
+                FileLoader.loadingFileFromJFileChooser(
+                    Config.PerformBackgroundImage.load(),
+                    ExtensionFilter.Image.filter,
+                    FileCheckingMethod.Image.method
+                )
+            }?.let { Config.PerformBackgroundImage.write(it.canonicalPath)
+val image=ImageIO.read(it)
+currentImage.icon= ImageIcon(image)
+            }
+
+        }
+    }
+
+    private val currentImageLabel= JLabel(getMessages("Will_Used_Background_Image")).usingGlobalProperties()
+
+private val currentImage=  JLabel( "<html><br>"+getMessages("Background_Image_Not_Selected_Yet")+"</html>").usingGlobalProperties()
+
+
+    private val  westGroup= JPanel( ).apply {
+        layout = BoxLayout(this, BoxLayout.Y_AXIS)
+        toolTipText = getMessages("Background_Image_Tips")
+        add(openImageButton)
+        add(currentImageLabel)
+        add(currentImage)
     }
 
     /*
@@ -116,9 +163,8 @@ East
             selectedItem?.let {
                 Config.Language.write((it as Messages.SupportedLanguage).locale.name)
                 dispose()
-                frame.dispose()
+                //无需在此处关闭HomePage的实例，在关闭HomePageIDLE时，会关闭HomePage的实例
                 HomePageIDLE.languageChanged=true
-
 
 
             }
@@ -162,6 +208,7 @@ private val southPanel= JPanel(GridLayout(2,1)).apply {
 
     private val mainPanel= JPanel(BorderLayout(10,10)).apply {
         border = BorderFactory.createEmptyBorder(10, 10, 10, 10) // 添加边缘边距
+        add(westGroup, BorderLayout.WEST)
         add(backButton, BorderLayout.NORTH)
         add(centerGroup, BorderLayout.CENTER)
         add(eastPanel, BorderLayout.EAST)

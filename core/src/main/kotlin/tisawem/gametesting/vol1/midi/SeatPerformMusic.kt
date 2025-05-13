@@ -18,20 +18,16 @@
 
 package tisawem.gametesting.vol1.midi
 
-import arrow.core.Tuple4
 import org.wysko.kmidi.midi.TimedArc
 import org.wysko.kmidi.midi.event.ControlChangeEvent
 import org.wysko.kmidi.midi.event.Event
 import org.wysko.kmidi.midi.event.ProgramEvent
 
-/**
- * 密封类，代表演奏席位要演奏的轨道
- *
- */
+
 /**
  * 乐器变更基础接口
  */
-sealed interface InstrumentChange {
+sealed interface Instrument {
     val tick: Int
     val program: ProgramEvent
 }
@@ -39,44 +35,48 @@ sealed interface InstrumentChange {
 /**
  * 普通乐器变更
  */
-data class GeneralInstrumentChange(
+data class GeneralInstrument(
     val msb: ControlChangeEvent,
     val lsb: ControlChangeEvent,
     override val program: ProgramEvent,
     override val tick: Int
-) : InstrumentChange
+) : Instrument
 
 /**
  * 打击乐器变更
  */
-data class PercussionInstrumentChange(
+data class PercussionInstrument(
     val lsb: ControlChangeEvent,
     override val program: ProgramEvent,
     override val tick: Int
-) : InstrumentChange
+) : Instrument
 
 /**
  * 表示演奏席位要演奏的音乐
  */
-sealed class SeatPerformMusic {
+sealed interface SeatPerformMusic {
     /**
      * 要演奏的音符列表
      */
-    abstract val arcs: List<TimedArc>
+    val arcs: List<TimedArc>
+
+ val events: List<Event>
 
     /**
      * 非打击乐器使用的轨道
      */
-    data class GeneralInstrument(
+    data class General(
         override val arcs: List<TimedArc>,
-        val instrumentChanges: List<GeneralInstrumentChange>
-    ) : SeatPerformMusic()
+        val instrumentChanges: List<GeneralInstrument>,
+        override val events: List<Event>
+    ) : SeatPerformMusic
 
     /**
      * 打击乐器专用轨道
      */
     data class Percussion(
         override val arcs: List<TimedArc>,
-        val instrumentChanges: List<PercussionInstrumentChange>
-    ) : SeatPerformMusic()
+        val instrumentChanges: List<PercussionInstrument>,
+        override val events: List<Event>
+    ) : SeatPerformMusic
 }

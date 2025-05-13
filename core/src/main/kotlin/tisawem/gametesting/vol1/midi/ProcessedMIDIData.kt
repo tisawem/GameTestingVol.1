@@ -202,20 +202,21 @@ class ProcessedMIDIData(kStdMidiFile: StandardMidiFile) {
         val defaultProgramChange = ProgramEvent(0, PERCUSSION_CHANNEL, defaultPercussion.second)
 
         // Extract instrument changes
-        val instrumentChanges: List<PercussionInstrumentChange> = extractInstrumentChanges(
+        val instrumentChanges: List<PercussionInstrument> = extractInstrumentChanges(
             events = ArrayDeque(track.events),
             msb = fakeMSB,
             lsb = defaultLSB,
             programChange = defaultProgramChange
         ).map { (_, lsb, programChange, tick) ->
-            PercussionInstrumentChange(lsb, programChange, tick)
+            PercussionInstrument(lsb, programChange, tick)
         }
 
         // Create percussion music entry
         percussionMusic.add(
             SeatPerformMusic.Percussion(
                 timeBasedSequence.convertArcsToTimedArcs(track.arcs),
-                instrumentChanges
+                instrumentChanges,
+                track.events
             )
         )
     }
@@ -229,20 +230,21 @@ class ProcessedMIDIData(kStdMidiFile: StandardMidiFile) {
         val defaultProgramChange = ProgramEvent(0, channel, defaultInstrument.third)
 
         // Extract instrument changes
-        val instrumentChanges: List<GeneralInstrumentChange> = extractInstrumentChanges(
+        val instrumentChanges: List<GeneralInstrument > = extractInstrumentChanges(
             events = ArrayDeque(track.events),
             msb = defaultMSB,
             lsb = defaultLSB,
             programChange = defaultProgramChange
         ).map { (msb, lsb, programChange, tick) ->
-            GeneralInstrumentChange(msb, lsb, programChange, tick)
+            GeneralInstrument (msb, lsb, programChange, tick)
         }
 
         // Create normal instrument music entry
         generalInstrumentMusic.add(
-            SeatPerformMusic.GeneralInstrument(
+            SeatPerformMusic.General(
                 timeBasedSequence.convertArcsToTimedArcs(track.arcs),
-                instrumentChanges
+                instrumentChanges,
+                track.events
             )
         )
     }
@@ -274,7 +276,7 @@ class ProcessedMIDIData(kStdMidiFile: StandardMidiFile) {
      *
      * 可能是个空轨道
      */
-    val generalInstrumentMusic = ArrayDeque<SeatPerformMusic.GeneralInstrument>()
+    val generalInstrumentMusic = ArrayDeque<SeatPerformMusic.General>()
     val percussionMusic = ArrayDeque<SeatPerformMusic.Percussion>()
 
 

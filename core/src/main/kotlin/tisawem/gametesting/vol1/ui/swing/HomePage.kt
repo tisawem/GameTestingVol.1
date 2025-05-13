@@ -1,6 +1,23 @@
+/**
+ *     GameTestingVol.1
+ *     Copyright (C) 2020-2025 Tisawem東北項目
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see https://www.gnu.org/licenses/.
+ */
+
 package tisawem.gametesting.vol1.ui.swing
 
-import arrow.core.Either
 import com.badlogic.gdx.Gdx
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
@@ -16,7 +33,6 @@ import java.awt.Font
 import java.awt.GridLayout
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
-import java.io.File
 import javax.swing.*
 
 class HomePage(val game: KtxGame<KtxScreen>) : JFrame("GameTestingVol.1 ${getMessages("HomePage")}") {
@@ -83,7 +99,7 @@ addWindowListener(object : WindowAdapter() {
         addActionListener {
            loopingAskUserForFileOrAbandon({FileLoader.loadingFileFromJFileChooser(
                Config.MIDIFile.load(),
-               ExtensionFilter.MIDIFile.filter,
+               ExtensionFilter.MIDIFile.filter(),
                FileCheckingMethod.MIDIFile.method
            )})?.let { Config.MIDIFile.write(it.canonicalPath)
            midiFilePathTextArea.text=it.canonicalPath
@@ -98,7 +114,7 @@ addWindowListener(object : WindowAdapter() {
         addActionListener {
             loopingAskUserForFileOrAbandon({FileLoader.loadingFileFromJFileChooser(
                 Config.MIDIOutputDevice.load(),
-                ExtensionFilter.SoundFont.filter,
+                ExtensionFilter.SoundFont.filter(),
                 FileCheckingMethod.SoundFont.method
             )})?.let { Config.MIDIOutputDevice.write(it.canonicalPath)
                 deviceOrSf2PathTextArea.text=it.canonicalPath
@@ -190,7 +206,7 @@ addWindowListener(object : WindowAdapter() {
         add(mainPanel)
 
         pack() // 根据组件首选大小调整窗口
-        minimumSize = Dimension(640, 480)
+        minimumSize = size//调节最小窗口大小，由于pack()后的窗口大小刚好没有元素堆叠，这样就规避的元素堆叠的问题
         setLocationRelativeTo(null) // 窗口居中
 
         isVisible = true

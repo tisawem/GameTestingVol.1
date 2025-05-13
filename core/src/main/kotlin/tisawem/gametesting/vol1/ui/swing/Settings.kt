@@ -1,7 +1,24 @@
+/**
+ *     GameTestingVol.1
+ *     Copyright (C) 2020-2025 Tisawem東北項目
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see https://www.gnu.org/licenses/.
+ */
+
 package tisawem.gametesting.vol1.ui.swing
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Texture
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
 import tisawem.gametesting.vol1.config.Config
@@ -10,7 +27,6 @@ import tisawem.gametesting.vol1.file.FileCheckingMethod
 import tisawem.gametesting.vol1.i18n.Messages
 import tisawem.gametesting.vol1.i18n.Messages.getMessages
 import tisawem.gametesting.vol1.toolkit.Toolkit
-import tisawem.gametesting.vol1.ui.gdx.restartGameInstance
 import tisawem.gametesting.vol1.ui.gdx.screen.HomePageIDLE
 import tisawem.gametesting.vol1.ui.swing.FileLoader.loopingAskUserForFileOrAbandon
 import java.awt.BorderLayout
@@ -18,27 +34,8 @@ import java.awt.Dimension
 import java.awt.Font
 import java.awt.GridLayout
 import java.awt.image.BufferedImage
-import java.io.File
 import javax.imageio.ImageIO
-import javax.swing.AbstractButton
-import javax.swing.BorderFactory
-import javax.swing.BoxLayout
-import javax.swing.ButtonGroup
-import javax.swing.Icon
-import javax.swing.ImageIcon
-import javax.swing.JButton
-import javax.swing.JCheckBox
-import javax.swing.JComboBox
-import javax.swing.JDialog
-import javax.swing.JFrame
-import javax.swing.JLabel
-import javax.swing.JPanel
-import javax.swing.JRadioButton
-import javax.swing.JSlider
-import javax.swing.JTextArea
-import javax.swing.UIManager
-import kotlin.math.max
-import kotlin.math.min
+import javax.swing.*
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -94,7 +91,7 @@ class Settings(frame: JFrame, val game: KtxGame<KtxScreen>) : JDialog(frame, get
             loopingAskUserForFileOrAbandon {
                 FileLoader.loadingFileFromJFileChooser(
                     Config.PerformBackgroundImage.load(),
-                    ExtensionFilter.Image.filter,
+                    ExtensionFilter.Image.filter(),
                     FileCheckingMethod.Image.method
                 )
             }?.let {
@@ -110,6 +107,8 @@ class Settings(frame: JFrame, val game: KtxGame<KtxScreen>) : JDialog(frame, get
                     val scale = currentImageLabel.width / image.width.toFloat()
 
                     currentImage.changeLabelIcon(image, scale).text = null
+                  this@Settings.minimumSize = Dimension(this@Settings.size.width,480)
+
                 } catch (_: Throwable) { /* 空着，不显示 */}
             }
 
@@ -179,6 +178,7 @@ East
 
     private val languageLabel = JLabel(getMessages("Change_Language")).usingGlobalProperties()
     private val languageBox = JComboBox(Messages.SupportedLanguage.entries.toTypedArray()).apply {
+        selectedItem= null
         font = Font(null, Font.PLAIN, 28)
         addActionListener {
             selectedItem?.let {
@@ -261,11 +261,18 @@ East
             )
             //与 Will_Used_Background_Image 文本栏同宽
             val scale = currentImageLabel.width / image.width.toFloat()
-            currentImage.changeLabelIcon(image, scale)
+            currentImage.changeLabelIcon(image, scale).text=null
+
+
+
         } catch (_: Throwable) {
           //空着，不显示
         }
-        minimumSize = Dimension(800, 480)
+
+//调整最小的窗口大小，高度480完美，宽度根据调整后的窗口规定。
+        // 这样，用户调节窗口时，就一定不会把元素堆叠
+        minimumSize= Dimension(width,480)
+
         setLocationRelativeTo(frame) // 窗口居中
         isVisible = true
     }

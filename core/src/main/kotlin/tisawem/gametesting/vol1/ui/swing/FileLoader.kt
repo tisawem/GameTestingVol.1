@@ -1,14 +1,3 @@
-package tisawem.gametesting.vol1.ui.swing
-
-import arrow.core.Either
-import tisawem.gametesting.vol1.i18n.Messages
-import tisawem.gametesting.vol1.i18n.Messages.getMessages
-import java.io.File
-import javax.swing.JFileChooser
-import javax.swing.JOptionPane
-import javax.swing.UIManager
-import javax.swing.filechooser.FileFilter
-
 /**
  *     GameTestingVol.1
  *     Copyright (C) 2020-2025 Tisawem東北項目
@@ -26,6 +15,19 @@ import javax.swing.filechooser.FileFilter
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see https://www.gnu.org/licenses/.
  */
+
+package tisawem.gametesting.vol1.ui.swing
+
+import arrow.core.Either
+import tisawem.gametesting.vol1.i18n.Messages
+import tisawem.gametesting.vol1.i18n.Messages.getMessages
+import java.io.File
+import javax.swing.JFileChooser
+import javax.swing.JOptionPane
+import javax.swing.UIManager
+import javax.swing.filechooser.FileFilter
+
+
 /**
  * 读取文件的类
  *

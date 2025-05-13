@@ -18,90 +18,80 @@
 
 package tisawem.gametesting.vol1.i18n
 
-import com.ibm.icu.util.ULocale
-import com.ibm.icu.util.UResourceBundle
-import tisawem.gametesting.vol1.config.Config
-import tisawem.gametesting.vol1.ui.swing.ExceptionDialog
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.utils.GdxRuntimeException
+import com.badlogic.gdx.utils.I18NBundle
+import tisawem.gametesting.vol1.config.CoreConfig
+import java.util.Locale
 
 
-/**
- * A utility object responsible for managing and retrieving localized messages based on the application's language configuration.
- *
- * This object ensures that the appropriate message bundle is loaded according to the configured or system-default language.
- * It provides thread-safe initialization and retrieval of messages using keys. If a message key is not found,
- * it returns a placeholder in the format `[key]` and logs an error dialog for debugging purposes.
- *
- * The `SupportedLanguage` enum defines the languages supported by the application, each associated with a specific locale.
- * The language configuration is managed through the `ConfigItem.Language` property, which persists the selected language
- * in the application's configuration file. If no language is explicitly set, the system's default language is used.
- *
- * The `ensureBundle` method initializes or reloads the resource bundle when the language configuration changes.
- * This method employs a double-checked locking mechanism to ensure thread safety during bundle initialization.
- *
- * Note: This object relies on the `ConfigItem.LanguageResourcePath` property to locate the resource bundle files.
- * Missing or invalid resources will trigger an error dialog to assist in diagnosing issues.
- */
 object Messages {
-    enum class SupportedLanguage(val locale: ULocale) {
-        Default(ULocale.ENGLISH), Zh(ULocale.CHINESE), Ja(ULocale.JAPANESE);
+    enum class SupportedLanguage(val locale: Locale) {
+        Default(Locale.ENGLISH),
+        Zh(Locale.CHINESE),
+        Ja(Locale.JAPANESE);
 
-        override fun toString(): String =locale.displayLanguage
+        override fun toString(): String = locale.displayLanguage
     }
 
-    private var bundle: UResourceBundle? = null
+    private var bundle: I18NBundle? = null
     private var currentLanguage: String = ""
     private val lock = Any()  // 用于同步的锁
 
     private fun ensureBundle() {
-        // 获取配置的语言，若为空白，将使用系统默认语言
-        val configLanguage = Config.Language.load().ifEmpty { ULocale.getDefault().language }
-
+        // 获取配置的语言,若为空白,将使用系统默认语言
+        val configLanguage = CoreConfig.Language.load().ifEmpty { Locale.getDefault().language }
 
         if (bundle == null || currentLanguage != configLanguage) {
             synchronized(lock) { // 加锁确保线程安全
                 if (bundle == null || currentLanguage != configLanguage) {  // 双重检查锁定
-                 /* 使用类加载器加载资源
-                          UResourceBundle.getBundleInstance可以自动处理，它有以下行为：
-                          如果configLanguage不是受支持的语言代码，就使用系统语言，若系统语言不支持，就使用messages.properties
-                          当ConfigLanguage为空白时，将直接使用messages.properties
-                          */
-
-                        bundle = UResourceBundle.getBundleInstance(
-                            Config.LanguageResourcePath.load(), configLanguage, Messages.javaClass.classLoader
-                        )
+                    try {
+                        // 构建 FileHandle 对象来加载资源
+                        val fileHandle = Gdx.files.internal(CoreConfig.LanguageResourcePath.load())
+                        // 加载 I18NBundle，使用指定语言或默认语言
+                        bundle = I18NBundle.createBundle(fileHandle, Locale(configLanguage))
                         currentLanguage = configLanguage
-
+                    } catch (e: Exception) {
+                        Gdx.app.error("Messages", "Failed to load language bundle", e)
+                        // 尝试使用默认语言
+                        try {
+                            val fileHandle = Gdx.files.internal(CoreConfig.LanguageResourcePath.load())
+                            bundle = I18NBundle.createBundle(fileHandle, Locale.ENGLISH)
+                            currentLanguage = "en"
+                        } catch (e2: Exception) {
+                            Gdx.app.error("Messages", "Failed to load default language bundle", e2)
+                            throw RuntimeException("Could not load any language bundles", e2)
+                        }
+                    }
                 }
             }
         }
     }
 
-
     fun getMessages(key: String): String = try {
         ensureBundle()
-        bundle!!.getString(key)
+        bundle!!.get(key)
+    } catch (e: Exception) {
+        val errorMessage = when (e) {
+            is GdxRuntimeException -> {
+                // 通常表示找不到资源或键
+                Gdx.app.error("Messages", "Resource key not found: $key", e)
+                "Missing resource key: [$key]"
+            }
+            is NullPointerException -> {
+                // Bundle未初始化
+                Gdx.app.error("Messages", "Bundle not initialized", e)
+                "Bundle initialization error: [$key]"
+            }
+            else -> {
+                // 其他未知错误
+                Gdx.app.error("Messages", "Unknown error when getting message for key: $key", e)
+                "Unknown error: [$key]"
+            }
+        }
 
-    } catch (e: Throwable) {
-        ExceptionDialog(
-            e,
-            true,
-            """
-1、MissingResourceException
-    a.  ${Config.LanguageResourcePath.load()}
-        该类路径下没有messages.properties文件
 
-    b.  messages.properties 文件没有 $key 对应的字符串.
-
-以下错误需要检查源代码，它们不应该抛出。
-    1、NullPointerException
-        Bundle未初始化。
-
-    2、ClassCastException
-        $key 不是字符串
-
-其他错误为未知错误。该函数返回：
-“[$key]”""".trimIndent()
-        )
+        // 返回键名称作为后备
         "[$key]"
     }
 
@@ -112,7 +102,5 @@ object Messages {
      *
      * @return The processed string with `<LF>` replaced by `\n`.
      */
-    fun getMessagesWithLineFeedReplace(key: String)=getMessages(key).replace("<LF>", "\n")
-
-
+    fun getMessagesWithLineFeedReplace(key: String) = getMessages(key).replace("<LF>", "\n")
 }

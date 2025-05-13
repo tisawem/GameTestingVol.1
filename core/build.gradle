@@ -44,7 +44,5 @@ dependencies {
   implementation 'io.arrow-kt:arrow-core:2.0.1'
   implementation 'io.arrow-kt:arrow-fx-coroutines:2.0.1'
   implementation 'com.ibm.icu:icu4j:77.1'
-  implementation 'org.jjazzlab:fluidsynthjava:0.3.2'
-  implementation "org.jetbrains.kotlin:kotlin-reflect:2.1.20"
 
 }

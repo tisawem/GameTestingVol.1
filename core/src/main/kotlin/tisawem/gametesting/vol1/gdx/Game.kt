@@ -20,15 +20,19 @@ package tisawem.gametesting.vol1.gdx
 
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
+import tisawem.gametesting.vol1.Bridge
+import tisawem.gametesting.vol1.config.CoreConfigOperation
 import tisawem.gametesting.vol1.gdx.screen.PerformScreen
-import kotlin.time.Duration
 
-/**
- * @param position MIDI播放的时间进度
- */
-class Game() : KtxGame<KtxScreen>() {
+
+class Game(val bridge: Bridge) : KtxGame<KtxScreen>() {
+
+
 
     override fun create() {
+
+        CoreConfigOperation.configProperties=bridge.configProperties
+
         addScreen<PerformScreen>(PerformScreen(this))
         setScreen<PerformScreen>()
     }

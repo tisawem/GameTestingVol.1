@@ -18,7 +18,6 @@
 
 package tisawem.gametesting.vol1.lwjgl3.swing
 
-import com.badlogic.gdx.Gdx
 import tisawem.gametesting.vol1.lwjgl3.config.DesktopConfig
 import tisawem.gametesting.vol1.lwjgl3.file.ExtensionFilter
 import tisawem.gametesting.vol1.lwjgl3.file.FileCheckingMethod
@@ -29,6 +28,7 @@ import java.awt.BorderLayout
 import java.awt.Font
 import java.awt.GridLayout
 import javax.swing.*
+import javax.swing.border.Border
 
 class HomePage( ) : JFrame("GameTestingVol.1 ${getMessages("HomePage")}") {
     init {
@@ -64,7 +64,27 @@ class HomePage( ) : JFrame("GameTestingVol.1 ${getMessages("HomePage")}") {
             return this
         }
 
+        const val VERSION=1.1
+
       }
+/*
+---------------------North
+ */
+
+    private val title= JLabel("GameTestingVol.1").apply {
+        font= Font(null ,Font.BOLD,36)
+    }
+    private val version=JLabel("${getMessages("Version")}       $VERSION").usingGlobalProperties()
+    private val about= JButton(getMessages("About")).apply {
+        usingGlobalProperties()
+    }
+
+
+    private val titlePanel= JPanel(BorderLayout()).apply {
+        add(title, BorderLayout.NORTH)
+        add(version, BorderLayout.WEST)
+        add(about, BorderLayout.EAST)
+    }
 
 
     /*
@@ -77,12 +97,7 @@ class HomePage( ) : JFrame("GameTestingVol.1 ${getMessages("HomePage")}") {
         toolTipText = getMessages("Play_Tips")
     }
 
-    private val settings = JButton(getMessages("Settings")).apply {
-        usingGlobalProperties()
-        addActionListener {
-            Settings(this@HomePage)
-        }
-    }
+
 
     private val openMidiFile = JButton(getMessages("Open_MIDI_File")).apply {
         usingGlobalProperties()
@@ -97,6 +112,12 @@ class HomePage( ) : JFrame("GameTestingVol.1 ${getMessages("HomePage")}") {
 
            }
 
+        }
+    }
+    private val settings = JButton(getMessages("Settings")).apply {
+        usingGlobalProperties()
+        addActionListener {
+            Settings(this@HomePage)
         }
     }
     private val openSoundFont = JButton(getMessages("Open_SoundFont")).apply {
@@ -118,10 +139,9 @@ class HomePage( ) : JFrame("GameTestingVol.1 ${getMessages("HomePage")}") {
         usingGlobalProperties()
         addActionListener {
             this@HomePage.dispose()
-            Gdx.app.exit()
         }
     }
-    private val buttons = JPanel(GridLayout(5, 1, 5, 5)).apply {
+    private val westButtons = JPanel(GridLayout(5, 1 )).apply {
         add(play)
         add(settings)
         add(openMidiFile)
@@ -129,31 +149,12 @@ class HomePage( ) : JFrame("GameTestingVol.1 ${getMessages("HomePage")}") {
         add(exit)
     }
 
-    /*
-  ----------------------South
-   */
-    private val midiDeviceLabel = JLabel(getMessages("Output_MIDI_Device")).usingGlobalProperties()
-    private val midiDevice = JComboBox(MidiDeviceManager.getAvailableMIDIOutputDevices().toTypedArray()).apply {
-        font = Font(null, Font.PLAIN, 28)
-        toolTipText=getMessages("Output_MIDI_Device_Tips")+"  Microsoft MIDI Mapper  Microsoft GS Wavetable Synth"
-
-       addActionListener {
-          selectedItem?.let {
-              DesktopConfig.MIDIOutputDevice.write(it.toString() )
-              deviceOrSf2PathTextArea.text=it.toString()
-          }
-       }
 
 
-    }
 
-    private val midiDevicePanel = JPanel(GridLayout(2, 1, 5, 5)).apply {
-        add(midiDeviceLabel)
-        add(midiDevice)
-    }
 
     /*
-      ----------------------Center
+      ----------------------CENTER
        */
 
 
@@ -182,13 +183,37 @@ class HomePage( ) : JFrame("GameTestingVol.1 ${getMessages("HomePage")}") {
         add(deviceLabel)
         add(deviceOrSf2PathPane)
     }
+    /*
+   ----------------------South
+    */
+    private val midiDeviceLabel = JLabel(getMessages("Output_MIDI_Device")).usingGlobalProperties()
+    private val midiDevice = JComboBox(MidiDeviceManager.getAvailableMIDIOutputDevices().toTypedArray()).apply {
+        font = Font(null, Font.PLAIN, 28)
+        toolTipText=getMessages("Output_MIDI_Device_Tips")+"  Microsoft MIDI Mapper  Microsoft GS Wavetable Synth"
 
+        addActionListener {
+            selectedItem?.let {
+                DesktopConfig.MIDIOutputDevice.write(it.toString() )
+                deviceOrSf2PathTextArea.text=it.toString()
+            }
+        }
+
+
+    }
+
+    private val midiDevicePanel = JPanel(GridLayout(2, 1, 5, 5)).apply {
+        add(midiDeviceLabel)
+        add(midiDevice)
+    }
 
     private val mainPanel = JPanel(BorderLayout(5, 5)).apply {
         border = BorderFactory.createEmptyBorder(10, 10, 10, 10) // 添加边缘边距
-        add(buttons, BorderLayout.WEST)
-        add(midiDevicePanel, BorderLayout.SOUTH)
+
+        add(titlePanel, BorderLayout.NORTH)
+        add(westButtons, BorderLayout.WEST)
         add(statuePanel, BorderLayout.CENTER)
+        add(midiDevicePanel, BorderLayout.SOUTH)
+
     }
 
 

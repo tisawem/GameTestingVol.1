@@ -19,6 +19,8 @@
 
 package tisawem.gametesting.vol1.config
 
+import java.util.Properties
+
 /**
  * 这是调用[ConfigOperation]类的枚举类
  *
@@ -34,7 +36,7 @@ package tisawem.gametesting.vol1.config
  * @param write 写入配置项，返回the previous value of the specified key, or null if it did not have one.
  *
  */
-enum class CoreConfig(val load: () -> String, val write: (String) -> Any?) {
+enum class CoreConfig(val item:String) {
     // 可读写设置项 (会在config.properties文件写入的配置)
     Language("Language"),
     ScreenAdvancedTime("Screen_Advanced_Time"),
@@ -53,5 +55,9 @@ enum class CoreConfig(val load: () -> String, val write: (String) -> Any?) {
 
     ;
 
-    constructor(item: String) : this({  CoreConfigOperation.load (item) }, { s -> CoreConfigOperation.write(item, s) })
-}
+    fun load  ( ) : String= CoreConfigOperation .load(item)
+
+
+    fun write (content:String ): Any? =CoreConfigOperation .write(item,content)
+
+   }

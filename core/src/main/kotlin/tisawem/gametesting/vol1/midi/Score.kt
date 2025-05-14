@@ -54,7 +54,7 @@ data class PercussionInstrument(
 /**
  * 表示演奏席位要演奏的音乐
  */
-sealed interface SeatPerformMusic {
+sealed interface Score {
     /**
      * 要演奏的音符列表
      */
@@ -69,7 +69,7 @@ sealed interface SeatPerformMusic {
         override val arcs: List<TimedArc>,
         val instrumentChanges: List<GeneralInstrument>,
         override val events: List<Event>
-    ) : SeatPerformMusic
+    ) : Score
 
     /**
      * 打击乐器专用轨道
@@ -78,5 +78,5 @@ sealed interface SeatPerformMusic {
         override val arcs: List<TimedArc>,
         val instrumentChanges: List<PercussionInstrument>,
         override val events: List<Event>
-    ) : SeatPerformMusic
+    ) : Score
 }

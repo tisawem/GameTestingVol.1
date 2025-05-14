@@ -26,7 +26,7 @@ import tisawem.gametesting.vol1.lwjgl3.config.CoreConfig
 import tisawem.gametesting.vol1.lwjgl3.swing.ExceptionDialog
 import tisawem.gametesting.vol1.midi.GeneralInstrument
 import tisawem.gametesting.vol1.midi.PercussionInstrument
-import tisawem.gametesting.vol1.midi.SeatPerformMusic
+import tisawem.gametesting.vol1.midi.Score
 
 /**
  * 对[StandardMidiFile]进行筛分的类，包含筛分后的各类数据
@@ -211,7 +211,7 @@ class ProcessedMIDIData(kStdMidiFile: StandardMidiFile) {
 
         // Create percussion music entry
         percussionMusic.add(
-            SeatPerformMusic.Percussion(
+            Score.Percussion(
                 timeBasedSequence.convertArcsToTimedArcs(track.arcs),
                 instrumentChanges,
                 track.events
@@ -239,7 +239,7 @@ class ProcessedMIDIData(kStdMidiFile: StandardMidiFile) {
 
         // Create normal instrument music entry
         generalInstrumentMusic.add(
-            SeatPerformMusic.General(
+            Score.General(
                 timeBasedSequence.convertArcsToTimedArcs(track.arcs),
                 instrumentChanges,
                 track.events
@@ -262,8 +262,8 @@ class ProcessedMIDIData(kStdMidiFile: StandardMidiFile) {
      *
      * 可能是个空轨道
      */
-    val generalInstrumentMusic = ArrayDeque<SeatPerformMusic.General>()
-    val percussionMusic = ArrayDeque<SeatPerformMusic.Percussion>()
+    val generalInstrumentMusic = ArrayDeque<Score.General>()
+    val percussionMusic = ArrayDeque<Score.Percussion>()
 
 
 }

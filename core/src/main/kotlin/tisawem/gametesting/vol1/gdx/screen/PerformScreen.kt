@@ -12,7 +12,6 @@ import ktx.app.KtxGame
 import ktx.app.KtxScreen
 import ktx.assets.disposeSafely
 import tisawem.gametesting.vol1.config.CoreConfig
-import kotlin.time.Duration
 
 /**
  * 减少样板代码，统一外观的抽象屏幕类

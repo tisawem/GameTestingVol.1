@@ -1,8 +1,8 @@
 package tisawem.gametesting.vol1
 
 import org.wysko.kmidi.midi.TimeBasedSequence
-import org.wysko.kmidi.midi.event.Event
-import tisawem.gametesting.vol1.midi.SeatPerformMusic
+import tisawem.gametesting.vol1.midi.Score
+import java.util.Properties
 import kotlin.time.Duration
 
 interface Bridge {
@@ -19,6 +19,11 @@ interface Bridge {
     /**
      * 演奏轨道
      */
-    val generalInstrumentMusic :ArrayDeque<SeatPerformMusic.General>
-    val percussionMusic : ArrayDeque<SeatPerformMusic.Percussion>
+    val generalInstrumentMusic :ArrayDeque<Score.General>
+    val percussionMusic : ArrayDeque<Score.Percussion>
+
+    /**
+     * 传入配置文件
+     */
+    val configProperties: Properties
 }

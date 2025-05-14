@@ -18,9 +18,6 @@
 
 package tisawem.gametesting.vol1.config
 
-import com.badlogic.gdx.Gdx
-import java.io.FileNotFoundException
-
 import java.util.Properties
 
 
@@ -38,19 +35,12 @@ object CoreConfigOperation {
     private val lock = Any()
 
     // 使用 lazy 的线程安全模式（默认）来懒加载配置文件
-    private val coreConfigProperties by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
-        Properties().apply {
-            val inputStream = Gdx.files.internal("Config/CoreConfig.properties") .read()
-            load(inputStream)
-            inputStream.close()
-        }
-    }
-
+      var configProperties: Properties?=null
 
 
     // 读取配置，确保返回非空值；如果 key 不存在则抛出异常
     fun load (key: String): String = synchronized(lock) {
-        coreConfigProperties.getProperty(key)
+        configProperties!!.getProperty(key)
             ?: throw NoSuchElementException("""
 配置项 $key 不存在，请检查 assets/Config文件夹内的CoreConfig.properties 文件。
 
@@ -61,17 +51,17 @@ object CoreConfigOperation {
 
     // 写入配置到内存中
     fun write(key: String, value: String): Any? = synchronized(lock) {
-        coreConfigProperties.setProperty(key, value)
+        configProperties!!.setProperty(key, value)
     }
 
     // 清除指定的配置项
     fun remove(key: String): Any? = synchronized(lock) {
-        coreConfigProperties.remove(key)
+        configProperties!!.remove(key)
     }
 
     // 检查配置项是否存在
     fun contains(key: String): Boolean = synchronized(lock) {
-        coreConfigProperties.containsKey(key)
+        configProperties!!.containsKey(key)
     }
 }
 

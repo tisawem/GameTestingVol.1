@@ -16,13 +16,13 @@
  *     along with this program.  If not, see https://www.gnu.org/licenses/.
  */
 
-package tisawem.gametesting.vol1.gdx.seat
+package tisawem.gametesting.vol1.gdx.musician
 
 import com.badlogic.gdx.scenes.scene2d.Actor
 import org.wysko.kmidi.midi.TimeBasedSequence
-import tisawem.gametesting.vol1.midi.SeatPerformMusic
+import tisawem.gametesting.vol1.midi.Score
 
-sealed interface PerformSeat {
+sealed interface Musician {
 
     fun getActor(): Actor
 
@@ -31,7 +31,7 @@ sealed interface PerformSeat {
      * 两个字段，作为主构造函数实现
      */
     val timeBasedSequence: TimeBasedSequence
-    val music: SeatPerformMusic
+    val music: Score
 
 }
 
@@ -39,6 +39,6 @@ sealed interface PerformSeat {
 通过继承不同的接口，分辨席位是打击乐器与否
  */
 
-interface GeneralSeat: PerformSeat
+interface GeneralSeat: Musician
 
-interface PercussionSeat: PerformSeat
+interface PercussionSeat: Musician

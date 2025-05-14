@@ -68,10 +68,12 @@ enum class CoreConfig(val item: String ) {
 
     ;
 
-    private val configInstance= ConfigOperation(CoreConfig::class.java.classLoader.getResourceAsStream("Config/CoreConfig.properties")?: ExceptionDialog(
+    private val configInstance= ConfigOperation(CoreConfig::class.java.classLoader.getResourceAsStream("CoreConfig.properties")?: ExceptionDialog(
         FileNotFoundException(),false,"CoreConfig.properties 文件没找到。").onExit())
 
     fun load()=configInstance.load (item)
 
     fun write(value:String)=configInstance.write(item,value)
+
+    fun getProperties()=configInstance.configProperties
 }

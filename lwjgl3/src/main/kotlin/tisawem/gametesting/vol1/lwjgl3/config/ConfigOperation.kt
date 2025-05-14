@@ -34,12 +34,12 @@ import java.util.Properties
  */
 
 
-class ConfigOperation(val propertiesFileStream: InputStream) {
+class ConfigOperation(private val propertiesFileStream: InputStream) {
     // 定义一个锁对象，用于同步配置操作
     private val lock = Any()
 
     // 使用 lazy 的线程安全模式（默认）来懒加载配置文件
-    private val configProperties by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
+      val configProperties by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
         Properties().apply {
 
             load(propertiesFileStream)

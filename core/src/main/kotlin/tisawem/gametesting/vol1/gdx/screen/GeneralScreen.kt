@@ -6,31 +6,40 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.FitViewport
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
 import ktx.assets.disposeSafely
 import tisawem.gametesting.vol1.config.CoreConfig
+import kotlin.math.min
 
 /**
  * 减少样板代码，统一外观的抽象屏幕类
  */
-  class PerformScreen (val game: KtxGame<KtxScreen>): KtxScreen{
+abstract  class GeneralScreen (val game: KtxGame<GeneralScreen>): KtxScreen{
    private val batch= SpriteBatch()
     val viewport= FitViewport(3840f,2160f)
 
 
-    val backgroundTexture  = Texture(try {
-        Gdx.files.internal(CoreConfig.PerformBackgroundImage.load())
+    val backgroundTexture  = try {
+        Texture( Gdx.files.internal(CoreConfig.PerformBackgroundImage.load()))
     }catch (_: Throwable){
-        Gdx.files.external(CoreConfig.PerformBackgroundImage.load())
-    })
-    var background= Sprite(backgroundTexture)
+        try {
+            Texture( Gdx.files.external(CoreConfig.PerformBackgroundImage.load()))
+        }catch (_: Throwable){
+            null
+        }
 
-
+    }
     val stage= Stage(viewport,batch).apply {
         Gdx.input.inputProcessor=this
+        if (backgroundTexture != null) {
+            addActor(Image(backgroundTexture).apply {
+                setScale(min(viewport.worldWidth/backgroundTexture.width.toFloat(),viewport.worldHeight/backgroundTexture.height.toFloat()))
+            })
+        }
     }
 
     override fun render(delta: Float) {
@@ -38,9 +47,7 @@ import tisawem.gametesting.vol1.config.CoreConfig
         batch.projectionMatrix = viewport.camera.combined
 
 
-        batch.begin()
-        background.draw(batch)
-        batch.end()
+
         stage.act(delta)
         stage.draw()
 

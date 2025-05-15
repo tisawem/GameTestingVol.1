@@ -270,7 +270,8 @@ East
 
 //调整最小的窗口大小，高度480完美，宽度根据调整后的窗口规定。
         // 这样，用户调节窗口时，就一定不会把元素堆叠
-        minimumSize= Dimension(width,480)
+      pack()
+        minimumSize=size
 
         setLocationRelativeTo(frame) // 窗口居中
         isVisible = true

@@ -18,6 +18,12 @@
 
 package tisawem.gametesting.vol1.lwjgl3.swing
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
+import tisawem.gametesting.vol1.Bridge
+import tisawem.gametesting.vol1.gdx.Game
+import tisawem.gametesting.vol1.gdx.screen.Perform
+import tisawem.gametesting.vol1.lwjgl3.config.CoreConfig
 import tisawem.gametesting.vol1.lwjgl3.config.DesktopConfig
 import tisawem.gametesting.vol1.lwjgl3.file.ExtensionFilter
 import tisawem.gametesting.vol1.lwjgl3.file.FileCheckingMethod
@@ -25,16 +31,17 @@ import tisawem.gametesting.vol1.lwjgl3.i18n.Messages.getMessages
 import tisawem.gametesting.vol1.lwjgl3.midi.player.MidiDeviceManager
 import tisawem.gametesting.vol1.lwjgl3.swing.FileLoader.loopingAskUserForFileOrAbandon
 import java.awt.BorderLayout
+import java.awt.Dimension
 import java.awt.Font
 import java.awt.GridLayout
+import java.util.Properties
 import javax.swing.*
-import javax.swing.border.Border
 
 class HomePage( ) : JFrame("GameTestingVol.1 ${getMessages("HomePage")}") {
     init {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
 
-        defaultCloseOperation =DISPOSE_ON_CLOSE
+        defaultCloseOperation =EXIT_ON_CLOSE
 
     }
 
@@ -64,37 +71,61 @@ class HomePage( ) : JFrame("GameTestingVol.1 ${getMessages("HomePage")}") {
             return this
         }
 
-        const val VERSION=1.1
-
+const val SOFTWARE_VERSION="1.1  git-c8d4ce5c"
       }
 /*
 ---------------------North
  */
 
-    private val title= JLabel("GameTestingVol.1").apply {
+    private val title= JLabel("GameTestingVol.1  ").apply {
         font= Font(null ,Font.BOLD,36)
     }
-    private val version=JLabel("${getMessages("Version")}       $VERSION").usingGlobalProperties()
+
+    private val version= JLabel("<html>${getMessages("Version")} $SOFTWARE_VERSION<br>Copyright (C) 2020-2025 Tisawem東北項目<br>${getMessages("Software_License")} GPLv3+").apply {
+        font= Font(null, Font.ITALIC,14)
+    }
+
+
+    private val midiFileLabel = JLabel("  "+getMessages("Will_Used_MIDI_File")).usingGlobalProperties()
+
+
     private val about= JButton(getMessages("About")).apply {
         usingGlobalProperties()
     }
 
 
     private val titlePanel= JPanel(BorderLayout()).apply {
-        add(title, BorderLayout.NORTH)
-        add(version, BorderLayout.WEST)
-        add(about, BorderLayout.EAST)
+        add(title , BorderLayout.WEST)
+add(version, BorderLayout.CENTER)
+        add(about , BorderLayout.EAST)
+        add(midiFileLabel, BorderLayout.SOUTH)
     }
 
 
     /*
-    ----------------------West
+    ----------------------East
      */
 
 
     private val play = JButton(getMessages("Play")).apply {
         usingGlobalProperties()
         toolTipText = getMessages("Play_Tips")
+
+
+        addActionListener {
+         this@HomePage.  isVisible=false
+            Lwjgl3Application(Game(object : Bridge {
+                override val configProperties: Properties
+                    get() = CoreConfig.PerformBackgroundImage.getProperties()
+
+            }) {
+                it.addScreen<Perform>(Perform(it))
+               it. setScreen<Perform>()
+
+            })
+
+            this@HomePage.     isVisible=true
+        }
     }
 
 
@@ -141,7 +172,7 @@ class HomePage( ) : JFrame("GameTestingVol.1 ${getMessages("HomePage")}") {
             this@HomePage.dispose()
         }
     }
-    private val westButtons = JPanel(GridLayout(5, 1 )).apply {
+    private val eastBuuttons = JPanel(GridLayout(5, 1 )).apply {
         add(play)
         add(settings)
         add(openMidiFile)
@@ -157,8 +188,6 @@ class HomePage( ) : JFrame("GameTestingVol.1 ${getMessages("HomePage")}") {
       ----------------------CENTER
        */
 
-
-    private val midiFileLabel = JLabel(getMessages("Will_Used_MIDI_File")).usingGlobalProperties()
 
 
     private val midiFilePathTextArea = JTextArea(DesktopConfig.MIDIFile.load()).apply {
@@ -178,7 +207,7 @@ class HomePage( ) : JFrame("GameTestingVol.1 ${getMessages("HomePage")}") {
 
     private val statuePanel = JPanel(/*没把布局放在这里的原因是：BoxLayout需要传入statuePanel的实例*/).apply {
         layout = BoxLayout(this, BoxLayout.Y_AXIS)
-        add(midiFileLabel)
+
         add(midiFilePathPane)
         add(deviceLabel)
         add(deviceOrSf2PathPane)
@@ -186,10 +215,10 @@ class HomePage( ) : JFrame("GameTestingVol.1 ${getMessages("HomePage")}") {
     /*
    ----------------------South
     */
-    private val midiDeviceLabel = JLabel(getMessages("Output_MIDI_Device")).usingGlobalProperties()
+    private val midiDeviceLabel = JLabel(getMessages("Select_MIDI_Device")).usingGlobalProperties()
     private val midiDevice = JComboBox(MidiDeviceManager.getAvailableMIDIOutputDevices().toTypedArray()).apply {
         font = Font(null, Font.PLAIN, 28)
-        toolTipText=getMessages("Output_MIDI_Device_Tips")+"  Microsoft MIDI Mapper  Microsoft GS Wavetable Synth"
+        toolTipText=getMessages("Select_MIDI_Device_Tips")+"  Microsoft MIDI Mapper  Microsoft GS Wavetable Synth"
 
         addActionListener {
             selectedItem?.let {
@@ -201,7 +230,7 @@ class HomePage( ) : JFrame("GameTestingVol.1 ${getMessages("HomePage")}") {
 
     }
 
-    private val midiDevicePanel = JPanel(GridLayout(2, 1, 5, 5)).apply {
+    private val midiDevicePanel = JPanel(GridLayout(2, 1)).apply {
         add(midiDeviceLabel)
         add(midiDevice)
     }
@@ -210,7 +239,7 @@ class HomePage( ) : JFrame("GameTestingVol.1 ${getMessages("HomePage")}") {
         border = BorderFactory.createEmptyBorder(10, 10, 10, 10) // 添加边缘边距
 
         add(titlePanel, BorderLayout.NORTH)
-        add(westButtons, BorderLayout.WEST)
+        add(eastBuuttons, BorderLayout.EAST)
         add(statuePanel, BorderLayout.CENTER)
         add(midiDevicePanel, BorderLayout.SOUTH)
 

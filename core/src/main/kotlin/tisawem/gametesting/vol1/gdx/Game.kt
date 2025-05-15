@@ -18,23 +18,26 @@
 
 package tisawem.gametesting.vol1.gdx
 
+import com.badlogic.gdx.Gdx
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
 import tisawem.gametesting.vol1.Bridge
 import tisawem.gametesting.vol1.config.CoreConfigOperation
-import tisawem.gametesting.vol1.gdx.screen.PerformScreen
+import tisawem.gametesting.vol1.gdx.screen.GeneralScreen
 
-
-class Game(val bridge: Bridge) : KtxGame<KtxScreen>() {
+/**
+ * @param bridge 提供一个实现类，以便传入画面要演奏的轨道，获取时间进度等...
+ * @param screen KtxScreen实现类，决定了第一屏是什么
+ * @param screenType 提供传入的Screen的类型信息
+ */
+class Game  (val bridge: Bridge ,val scriptInCreateFunction:(Game)-> Unit) : KtxGame<GeneralScreen>() {
 
 
 
     override fun create() {
 
         CoreConfigOperation.configProperties=bridge.configProperties
-
-        addScreen<PerformScreen>(PerformScreen(this))
-        setScreen<PerformScreen>()
+        scriptInCreateFunction(this)
     }
 
 }

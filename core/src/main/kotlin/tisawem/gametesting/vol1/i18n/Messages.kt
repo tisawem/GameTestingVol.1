@@ -19,13 +19,14 @@
 package tisawem.gametesting.vol1.i18n
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.utils.GdxRuntimeException
 import com.badlogic.gdx.utils.I18NBundle
 import tisawem.gametesting.vol1.config.CoreConfig
-import java.util.Locale
+import java.util.*
 
 
 object Messages {
+
+
     enum class SupportedLanguage(val locale: Locale) {
         Default(Locale.ENGLISH),
         Zh(Locale.CHINESE),
@@ -45,24 +46,15 @@ object Messages {
         if (bundle == null || currentLanguage != configLanguage) {
             synchronized(lock) { // 加锁确保线程安全
                 if (bundle == null || currentLanguage != configLanguage) {  // 双重检查锁定
-                    try {
+
+
+
                         // 构建 FileHandle 对象来加载资源
                         val fileHandle = Gdx.files.internal(CoreConfig.LanguageResourcePath.load())
                         // 加载 I18NBundle，使用指定语言或默认语言
-                        bundle = I18NBundle.createBundle(fileHandle, Locale(configLanguage))
+                        bundle = I18NBundle.createBundle(fileHandle, Locale.forLanguageTag(configLanguage))
                         currentLanguage = configLanguage
-                    } catch (e: Exception) {
-                        Gdx.app.error("Messages", "Failed to load language bundle", e)
-                        // 尝试使用默认语言
-                        try {
-                            val fileHandle = Gdx.files.internal(CoreConfig.LanguageResourcePath.load())
-                            bundle = I18NBundle.createBundle(fileHandle, Locale.ENGLISH)
-                            currentLanguage = "en"
-                        } catch (e2: Exception) {
-                            Gdx.app.error("Messages", "Failed to load default language bundle", e2)
-                            throw RuntimeException("Could not load any language bundles", e2)
-                        }
-                    }
+
                 }
             }
         }
@@ -71,24 +63,20 @@ object Messages {
     fun getMessages(key: String): String = try {
         ensureBundle()
         bundle!!.get(key)
-    } catch (e: Exception) {
-        val errorMessage = when (e) {
-            is GdxRuntimeException -> {
-                // 通常表示找不到资源或键
-                Gdx.app.error("Messages", "Resource key not found: $key", e)
-                "Missing resource key: [$key]"
-            }
-            is NullPointerException -> {
-                // Bundle未初始化
-                Gdx.app.error("Messages", "Bundle not initialized", e)
-                "Bundle initialization error: [$key]"
-            }
-            else -> {
-                // 其他未知错误
-                Gdx.app.error("Messages", "Unknown error when getting message for key: $key", e)
-                "Unknown error: [$key]"
-            }
-        }
+    } catch (e: Throwable) {
+        Gdx.app.error("运行时抛出错误","""
+1、NullPointerException
+    这个最不可能抛出
+    要么core模块的Messages类的Bundle字段没初始化
+    要么创建I18NBundle实例时，形参有null值
+
+2、 MissingResourceException
+    给定的Gdx.files.internal目录，没有任何语言包包含 $key 这个索引项
+    可以考虑 ${CoreConfig.LanguageResourcePath.load()} 这个目录是不是错了
+    还是语言包文件不含这个索引项
+
+    即将返回键名称：[$key]
+        """.trimIndent(),e)
 
 
         // 返回键名称作为后备
@@ -104,3 +92,5 @@ object Messages {
      */
     fun getMessagesWithLineFeedReplace(key: String) = getMessages(key).replace("<LF>", "\n")
 }
+
+

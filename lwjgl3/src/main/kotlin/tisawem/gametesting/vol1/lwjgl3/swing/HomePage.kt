@@ -20,6 +20,7 @@ package tisawem.gametesting.vol1.lwjgl3.swing
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
+import org.wysko.kmidi.midi.TimeBasedSequence
 import tisawem.gametesting.vol1.Bridge
 import tisawem.gametesting.vol1.gdx.Game
 import tisawem.gametesting.vol1.gdx.screen.Perform
@@ -30,12 +31,14 @@ import tisawem.gametesting.vol1.lwjgl3.file.FileCheckingMethod
 import tisawem.gametesting.vol1.lwjgl3.i18n.Messages.getMessages
 import tisawem.gametesting.vol1.lwjgl3.midi.player.MidiDeviceManager
 import tisawem.gametesting.vol1.lwjgl3.swing.FileLoader.loopingAskUserForFileOrAbandon
+import tisawem.gametesting.vol1.midi.Score
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.Font
 import java.awt.GridLayout
 import java.util.Properties
 import javax.swing.*
+import kotlin.time.Duration
 
 class HomePage( ) : JFrame("GameTestingVol.1 ${getMessages("HomePage")}") {
     init {
@@ -115,6 +118,21 @@ add(version, BorderLayout.CENTER)
         addActionListener {
          this@HomePage.  isVisible=false
             Lwjgl3Application(Game(object : Bridge {
+                override val timedBaseSequence: TimeBasedSequence
+                    get() = TODO("Not yet implemented")
+                override val play: () -> Unit
+                    get() = TODO("Not yet implemented")
+                override val stop: () -> Unit
+                    get() = TODO("Not yet implemented")
+
+                override fun getPosition(): Duration? {
+                    TODO("Not yet implemented")
+                }
+
+                override val generalInstrumentMusic: ArrayDeque<Score.General>
+                    get() = TODO("Not yet implemented")
+                override val percussionMusic: ArrayDeque<Score.Percussion>
+                    get() = TODO("Not yet implemented")
                 override val configProperties: Properties
                     get() = CoreConfig.PerformBackgroundImage.getProperties()
 

@@ -77,7 +77,7 @@ class ProcessedMIDIData(kStdMidiFile: StandardMidiFile) {
         }
 
         /**
-         * 从[Config]读取的默认打击乐器的值
+         * 从[CoreConfig]读取的默认打击乐器的值
          *
          * Pair两项分别为，LSB，Program Change。
          */

@@ -42,7 +42,7 @@ object CoreConfigOperation {
     fun load (key: String): String = synchronized(lock) {
         configProperties!!.getProperty(key)
             ?: throw NoSuchElementException("""
-配置项 $key 不存在，请检查 assets/Config文件夹内的CoreConfig.properties 文件。
+配置项 $key 不存在
 
 由于 GameTestingVol.1 严重依赖配置项
 正确读取到配置，程序才能正常工作。

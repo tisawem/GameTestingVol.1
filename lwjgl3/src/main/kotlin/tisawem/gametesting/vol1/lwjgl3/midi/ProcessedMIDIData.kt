@@ -22,8 +22,8 @@ import arrow.core.Tuple4
 import org.wysko.kmidi.midi.StandardMidiFile
 import org.wysko.kmidi.midi.TimeBasedSequence.Companion.toTimeBasedSequence
 import org.wysko.kmidi.midi.event.*
-import tisawem.gametesting.vol1.lwjgl3.midi.DefaultInstrument.Companion.LSB_CONTROLLER
-import tisawem.gametesting.vol1.lwjgl3.midi.DefaultInstrument.Companion.MSB_CONTROLLER
+import tisawem.gametesting.vol1.lwjgl3.midi.InstrumentStandard.Companion.LSB_CONTROLLER
+import tisawem.gametesting.vol1.lwjgl3.midi.InstrumentStandard.Companion.MSB_CONTROLLER
 import tisawem.gametesting.vol1.lwjgl3.swing.ExceptionDialog
 import tisawem.gametesting.vol1.midi.InstrumentChange
 import tisawem.gametesting.vol1.midi.Score
@@ -121,17 +121,17 @@ class ProcessedMIDIData(kStdMidiFile: StandardMidiFile) {
      * Process each channel track into appropriate music collections.
      */
     private fun initSeatsMusic() =channelSortedMidiEventsTracks.forEach { track ->
-        val defaultInstrument = DefaultInstrument(0,(track.events.first() as MidiEvent).channel)
+        val instrumentStandard = InstrumentStandard( (track.events.first() as MidiEvent).channel)
 
         // Extract instrument changes
         val instrumentChanges: List<InstrumentChange> = extractInstrumentChanges(
             events = ArrayDeque(track.events),
-            msb = defaultInstrument.defaultMSBEvent,
-            lsb = defaultInstrument.defaultLSBEvent,
-            programChange = defaultInstrument.defaultProgramEvent
+            msb = instrumentStandard.defaultMSBEvent,
+            lsb = instrumentStandard.defaultLSBEvent,
+            programChange = instrumentStandard.defaultProgramEvent
         ).map { (msb, lsb, programChange, tick) ->
             InstrumentChange(msb, lsb, programChange, tick)
-        }
+        }.ifEmpty {  listOf(instrumentStandard.defaultInstrumentChange) }
 
         // Create normal instrument music entry
         scores.add(

@@ -2,21 +2,39 @@ package tisawem.gametesting.vol1.gdx.musician
 
 import org.wysko.kmidi.midi.TimeBasedSequence
 import tisawem.gametesting.vol1.midi.InstrumentChange
+import tisawem.gametesting.vol1.midi.InstrumentStandard
 import tisawem.gametesting.vol1.midi.Score
 import kotlin.time.Duration
 
 /**
  * 能获得席位的各种各样函数
  */
-enum class AllocateMusicianFunctions(val allocateGeneral:  ( InstrumentChange)->Function3<TimeBasedSequence, Score, Function0<Duration>, Musician>?,val allocatePercussion:(InstrumentChange)->Function3<TimeBasedSequence, Score, Function0<Duration>, Musician>?){
+enum class AllocateMusicianFunctions(
+    val allocate: (InstrumentChange) -> Function3<TimeBasedSequence, Score, Function0<Duration>, Musician>?
+) {
+
+    /**
+     * 随机分配
+     *
+     * 根据MSB是否为打击乐器轨道，随机分配[GeneralMusicians]，或者[PercussionMusicians]
+     *
+     * 如果没有任何[PercussionMusicians]，就会分配一个[GeneralMusicians]
+     */
+
     RANDOM({
-        GeneralMusicians.entries.randomOrNull()?.musician
-    },{
-        PercussionMusicians.entries.randomOrNull()?.musician
+
+        when(it.msb.channel){
+
+            InstrumentStandard.PERCUSSION_CHANNEL->    PercussionMusicians.entries.randomOrNull()?.musician ?: GeneralMusicians.entries.randomOrNull()?.musician
+else ->  GeneralMusicians.entries.randomOrNull()?.musician
+
+        }
+
+
+
+
     })
-
-;
-
+    ;
 
 
 }

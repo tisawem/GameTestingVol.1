@@ -20,12 +20,12 @@ package tisawem.gametesting.vol1.midi
 
 import org.wysko.kmidi.midi.TimedArc
 import org.wysko.kmidi.midi.event.Event
+import org.wysko.kmidi.midi.event.MidiEvent
 
 
 /**
  * 表示演奏席位要演奏的乐谱
  */
 data class Score (val arcs: List<TimedArc>,
-
                   val events: List<Event>,
                   val instrumentChanges: List< InstrumentChange>)

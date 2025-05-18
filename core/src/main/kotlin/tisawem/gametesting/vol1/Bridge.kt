@@ -31,6 +31,8 @@ interface Bridge {
 
     /**
      * 演奏轨道
+     *
+     * 三个列表不得为空，平台端好好处理一下。
      */
     val score :ArrayDeque<Score >
 

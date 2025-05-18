@@ -36,7 +36,7 @@ import javax.sound.midi.MidiSystem
  * @param method 一个函数，接收一个[File]，返回[arrow.core.Either.Right]（File）或 [arrow.core.Either.Left]（String）
  */
 enum class FileCheckingMethod(val method: (File) -> Either<String, File>) {
-    MIDIFile( {
+    MIDIFile(  {it: File ->
      try {
          MidiSystem.getSequence(it)//是不是javax.sound.midi承认的序列
 
@@ -49,8 +49,8 @@ enum class FileCheckingMethod(val method: (File) -> Either<String, File>) {
      }catch (_: Throwable){
          getMessages("Cannot_Load_This_File")
      }
-    },true),
-    SoundFont(issue = {
+    } as (File) -> String?),
+    SoundFont( {it: File ->
 
         val instance = FluidSynthJava()//创建FluidSynthJava实例
         try {
@@ -63,7 +63,7 @@ enum class FileCheckingMethod(val method: (File) -> Either<String, File>) {
 //关闭实例
             instance.close()
         }
-    }),
+    }as (File) -> String?),
     Image( {it: File ->
         try {
             ImageIO.read(it)!!
@@ -89,7 +89,7 @@ enum class FileCheckingMethod(val method: (File) -> Either<String, File>) {
      *
      * ！！！！！！！！！！！！！！！！！！！！！！！！！！！
      */
-    constructor( issue: (File) -> String?, notForPrimaryConstructor:Boolean=true) : this(method = {
+    constructor( issue: (File) -> String? ) : this(method = {
         if (it.path.isBlank()) {
             Left(getMessages("File_Path_Is_Blank"))
         }

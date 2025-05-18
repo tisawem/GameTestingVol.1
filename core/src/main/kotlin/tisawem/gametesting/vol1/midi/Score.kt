@@ -19,64 +19,13 @@
 package tisawem.gametesting.vol1.midi
 
 import org.wysko.kmidi.midi.TimedArc
-import org.wysko.kmidi.midi.event.ControlChangeEvent
 import org.wysko.kmidi.midi.event.Event
-import org.wysko.kmidi.midi.event.ProgramEvent
 
 
 /**
- * 乐器变更基础接口
+ * 表示演奏席位要演奏的乐谱
  */
-sealed interface Instrument {
-    val tick: Int
-    val program: ProgramEvent
-}
+data class Score (val arcs: List<TimedArc>,
 
-/**
- * 普通乐器变更
- */
-data class GeneralInstrument(
-    val msb: ControlChangeEvent,
-    val lsb: ControlChangeEvent,
-    override val program: ProgramEvent,
-    override val tick: Int
-) : Instrument
-
-/**
- * 打击乐器变更
- */
-data class PercussionInstrument(
-    val lsb: ControlChangeEvent,
-    override val program: ProgramEvent,
-    override val tick: Int
-) : Instrument
-
-/**
- * 表示演奏席位要演奏的音乐
- */
-sealed interface Score {
-    /**
-     * 要演奏的音符列表
-     */
-    val arcs: List<TimedArc>
-
- val events: List<Event>
-
-    /**
-     * 非打击乐器使用的轨道
-     */
-    data class General(
-        override val arcs: List<TimedArc>,
-        val instrumentChanges: List<GeneralInstrument>,
-        override val events: List<Event>
-    ) : Score
-
-    /**
-     * 打击乐器专用轨道
-     */
-    data class Percussion(
-        override val arcs: List<TimedArc>,
-        val instrumentChanges: List<PercussionInstrument>,
-        override val events: List<Event>
-    ) : Score
-}
+                  val events: List<Event>,
+                  val instrumentChanges: List< InstrumentChange>)

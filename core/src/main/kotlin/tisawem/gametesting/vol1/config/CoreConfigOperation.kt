@@ -34,7 +34,11 @@ object CoreConfigOperation {
     // 定义一个锁对象，用于同步配置操作
     private val lock = Any()
 
-    // 使用 lazy 的线程安全模式（默认）来懒加载配置文件
+    /**
+     * 该字段由平台特定实现进行初始化
+     *
+     *      lwjgl3 -> tisawem/gametesting/vol1/lwjgl3/config/DesktopConfig.kt
+     */
       var configProperties: Properties?=null
 
 

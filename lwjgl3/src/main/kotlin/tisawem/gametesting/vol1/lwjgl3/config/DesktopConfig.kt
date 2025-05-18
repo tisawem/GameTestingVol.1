@@ -19,9 +19,10 @@
 
 package tisawem.gametesting.vol1.lwjgl3.config
 
+import tisawem.gametesting.vol1.config.CoreConfigOperation
 import tisawem.gametesting.vol1.lwjgl3.swing.ExceptionDialog
 import java.io.FileNotFoundException
-
+import java.util.Properties
 
 
 enum class DesktopConfig(val item: String) {
@@ -38,42 +39,35 @@ enum class DesktopConfig(val item: String) {
 
     ;
 
-   private val configInstance= ConfigOperation(DesktopConfig::class.java.classLoader.getResourceAsStream("DesktopConfig.properties")?: ExceptionDialog(
-        FileNotFoundException(),false,"DesktopConfig.properties 文件没找到。").onExit())
+    /**
+     * 初始化各配置读写类的Properties实例
+     */
+    init {
+    val desktopInputStream=DesktopConfig::class.java.classLoader.getResourceAsStream("DesktopConfig.properties")?: ExceptionDialog(
+        FileNotFoundException(),false,"DesktopConfig.properties 文件没找到。").onExit()
 
-    fun load()=configInstance.load (item)
 
-    fun write(value:String)=configInstance.write(item,value)
+    DesktopConfigOperation.configProperties= Properties().apply {
+        load(desktopInputStream)
+        desktopInputStream.close()
+    }
+
+    val coreInputStream=DesktopConfig::class.java.classLoader.getResourceAsStream("CoreConfig.properties")?: ExceptionDialog(
+        FileNotFoundException(),false,"CoreConfig.properties 文件没找到。").onExit()
+
+    CoreConfigOperation.configProperties== Properties().apply {
+        load(coreInputStream)
+        coreInputStream.close()
+    }
+
+}
+
+
+
+    fun load()= DesktopConfigOperation.load (item)
+
+    fun write(value:String)= DesktopConfigOperation.write(item,value)
 
 
    }
 
-
-enum class CoreConfig(val item: String ) {
-    // 可读写设置项 (会在config.properties文件写入的配置)
-    Language("Language"),
-    ScreenAdvancedTime("Screen_Advanced_Time"),
-    PerformBackgroundImage("Perform_Background_Image"),
-
-
-    // 仅读设置项 (整个程序生命周期内不会去修改的配置项)
-    LanguageResourcePath("Language_Resource_Path"),
-    DefaultInstrument("DefaultInstrument"),
-    DefaultPercussion("DefaultPercussion"),
-    FontLight("Font_Light"),
-    FontRegular("Font_Regular"),
-    FontBold("Font_Bold"),
-    UISkin("UISkin"),
-
-
-    ;
-
-    private val configInstance= ConfigOperation(CoreConfig::class.java.classLoader.getResourceAsStream("CoreConfig.properties")?: ExceptionDialog(
-        FileNotFoundException(),false,"CoreConfig.properties 文件没找到。").onExit())
-
-    fun load()=configInstance.load (item)
-
-    fun write(value:String)=configInstance.write(item,value)
-
-    fun getProperties()=configInstance.configProperties
-}

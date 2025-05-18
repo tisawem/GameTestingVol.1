@@ -22,10 +22,10 @@ import arrow.core.Tuple4
 import org.wysko.kmidi.midi.StandardMidiFile
 import org.wysko.kmidi.midi.TimeBasedSequence.Companion.toTimeBasedSequence
 import org.wysko.kmidi.midi.event.*
-import tisawem.gametesting.vol1.lwjgl3.config.CoreConfig
+import tisawem.gametesting.vol1.lwjgl3.midi.DefaultInstrument.Companion.LSB_CONTROLLER
+import tisawem.gametesting.vol1.lwjgl3.midi.DefaultInstrument.Companion.MSB_CONTROLLER
 import tisawem.gametesting.vol1.lwjgl3.swing.ExceptionDialog
-import tisawem.gametesting.vol1.midi.GeneralInstrument
-import tisawem.gametesting.vol1.midi.PercussionInstrument
+import tisawem.gametesting.vol1.midi.InstrumentChange
 import tisawem.gametesting.vol1.midi.Score
 
 /**
@@ -44,67 +44,7 @@ class ProcessedMIDIData(kStdMidiFile: StandardMidiFile) {
     }
 
 
-    companion object {
-        const val PERCUSSION_CHANNEL: Byte = 9//打击乐器的通道
-        const val MSB_CONTROLLER: Byte = 0 //MSB控制器
-        const val LSB_CONTROLLER: Byte = 32//LSB控制器
 
-        /**
-         * 从[Config]读取的默认乐器的值
-         *
-         * Triple三项分别为MSB，LSB，Program Change
-         */
-          val defaultInstrument: Triple<Byte, Byte, Byte> by lazy {
-            try {
-                CoreConfig.DefaultInstrument.load()
-                    .split('_', limit = 3)
-                    .map { it.toByte().takeIf { number -> number>=0 }?:throw NumberFormatException("范围不对") }
-                    .let { Triple(it[0], it[1], it[2]) }
-            }catch (e: Throwable){
-                ExceptionDialog(e,true,"""
-1、NumberFormatException，IndexOutOfBoundsException：
-    config.properties的设置项: DefaultInstrument，文本格式，或者范围不对：
-        当前设置项的值为：${CoreConfig.DefaultInstrument.load()}
-
-    正确格式为 <MSB>_<LSB>_<Program Change> ，值均为自然数，最大值为127。
-    DefaultPercussion 用来代替 MSB=128 的情况
-
-其他错误为未知错误。
-        """.trimIndent())
-//Acoustic Grand Piano
-                Triple(0.toByte(),0.toByte(),0.toByte())
-            }
-        }
-
-        /**
-         * 从[CoreConfig]读取的默认打击乐器的值
-         *
-         * Pair两项分别为，LSB，Program Change。
-         */
-          val defaultPercussion: Pair<Byte, Byte> by lazy {
-            try {
-                CoreConfig.DefaultPercussion.load()
-                    .split('_', limit = 2)
-                    .map { it.toByte().takeIf { number -> number>=0 }?:throw NumberFormatException("范围不对") }
-                    .let { Pair(it[0], it[1]) }
-            }catch (e: Throwable){
-                ExceptionDialog(e,true,"""
-1、NumberFormatException，IndexOutOfBoundsException：
-    config.properties的设置项: DefaultPercussion，文本格式，或者范围不对：
-        当前设置项的值为：${CoreConfig.DefaultPercussion.load()}
-    正确格式为 <LSB>_<Program Change> ，值均为自然数，最大值为127。
-
-其他错误为未知错误。
-
-        """.trimIndent())
-//Standard Kit
-                Pair(0.toByte(),0.toByte() )
-            }
-        }
-
-
-
-    }
 
 
     /**
@@ -180,69 +120,24 @@ class ProcessedMIDIData(kStdMidiFile: StandardMidiFile) {
     /**
      * Process each channel track into appropriate music collections.
      */
-    private fun initSeatsMusic() {
-        channelSortedMidiEventsTracks.forEach { track ->
-            val firstEvent = track.events.first() as MidiEvent
-            when (firstEvent.channel) {
-                PERCUSSION_CHANNEL -> initPercussionMusic(track)
-                else -> initNormalInstrumentMusic(track, firstEvent.channel)
-            }
-        }
-    }
-
-    /**
-     * Process percussion track data.
-     */
-    private fun initPercussionMusic(track: StandardMidiFile.Track) {
-        // Create fake MSB for percussion (always fixed)
-        val fakeMSB = ControlChangeEvent(0, 0,0,0)
-        val defaultLSB = ControlChangeEvent(0, PERCUSSION_CHANNEL, LSB_CONTROLLER, defaultPercussion.first)
-        val defaultProgramChange = ProgramEvent(0, PERCUSSION_CHANNEL, defaultPercussion.second)
+    private fun initSeatsMusic() =channelSortedMidiEventsTracks.forEach { track ->
+        val defaultInstrument = DefaultInstrument(0,(track.events.first() as MidiEvent).channel)
 
         // Extract instrument changes
-        val instrumentChanges: List<PercussionInstrument> = extractInstrumentChanges(
+        val instrumentChanges: List<InstrumentChange> = extractInstrumentChanges(
             events = ArrayDeque(track.events),
-            msb = fakeMSB,
-            lsb = defaultLSB,
-            programChange = defaultProgramChange
-        ).map { (_, lsb, programChange, tick) ->
-            PercussionInstrument(lsb, programChange, tick)
-        }
-
-        // Create percussion music entry
-        percussionMusic.add(
-            Score.Percussion(
-                timeBasedSequence.convertArcsToTimedArcs(track.arcs),
-                instrumentChanges,
-                track.events
-            )
-        )
-    }
-
-    /**
-     * Process normal instrument track data.
-     */
-    private fun initNormalInstrumentMusic(track: StandardMidiFile.Track, channel: Byte) {
-        val defaultMSB = ControlChangeEvent(0, channel, MSB_CONTROLLER, defaultInstrument.first)
-        val defaultLSB = ControlChangeEvent(0, channel, LSB_CONTROLLER, defaultInstrument.second)
-        val defaultProgramChange = ProgramEvent(0, channel, defaultInstrument.third)
-
-        // Extract instrument changes
-        val instrumentChanges: List<GeneralInstrument> = extractInstrumentChanges(
-            events = ArrayDeque(track.events),
-            msb = defaultMSB,
-            lsb = defaultLSB,
-            programChange = defaultProgramChange
+            msb = defaultInstrument.defaultMSBEvent,
+            lsb = defaultInstrument.defaultLSBEvent,
+            programChange = defaultInstrument.defaultProgramEvent
         ).map { (msb, lsb, programChange, tick) ->
-            GeneralInstrument(msb, lsb, programChange, tick)
+            InstrumentChange(msb, lsb, programChange, tick)
         }
 
         // Create normal instrument music entry
-        generalInstrumentMusic.add(
-            Score.General(
-                timeBasedSequence.convertArcsToTimedArcs(track.arcs),
-                instrumentChanges,
-                track.events
+        scores.add(
+            Score( timeBasedSequence.convertArcsToTimedArcs(track.arcs),
+                track.events,
+                instrumentChanges
             )
         )
     }
@@ -252,18 +147,14 @@ class ProcessedMIDIData(kStdMidiFile: StandardMidiFile) {
     公共访问权限的API
      */
 
-    val timeBasedSequence = kStdMidiFile.toTimeBasedSequence().apply {
-        channelSortedMidiEventsTracks.forEach { registerEvents(it.events) }//需要注册所有事件，以便TimeBasedSequence的API正常工作
-    }
+    val timeBasedSequence = kStdMidiFile.toTimeBasedSequence()
 
 
     /**
-     * 轨道
-     *
-     * 可能是个空轨道
+     * 各个乐谱
      */
-    val generalInstrumentMusic = ArrayDeque<Score.General>()
-    val percussionMusic = ArrayDeque<Score.Percussion>()
+    val scores = ArrayDeque<Score>()
+
 
 
 }

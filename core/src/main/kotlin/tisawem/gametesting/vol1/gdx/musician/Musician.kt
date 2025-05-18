@@ -23,7 +23,7 @@ import org.wysko.kmidi.midi.TimeBasedSequence
 import tisawem.gametesting.vol1.midi.Score
 import kotlin.time.Duration
 
-sealed interface Musician {
+  interface Musician {
 
     /**
      * 提供一个Actor，在演奏画面上展示
@@ -52,11 +52,3 @@ sealed interface Musician {
      */
     val getPosition: () -> Duration
 }
-
-/*
-通过继承不同的接口，分辨席位是打击乐器与否
- */
-
-interface General: Musician
-
-interface Percussion: Musician

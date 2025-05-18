@@ -20,7 +20,7 @@ package tisawem.gametesting.vol1.lwjgl3.i18n
 
 import com.ibm.icu.util.ULocale
 import com.ibm.icu.util.UResourceBundle
-import tisawem.gametesting.vol1.lwjgl3.config.CoreConfig
+import tisawem.gametesting.vol1.config.CoreConfig
 import tisawem.gametesting.vol1.lwjgl3.config.DesktopConfig
 import tisawem.gametesting.vol1.lwjgl3.swing.ExceptionDialog
 

@@ -22,7 +22,7 @@ package tisawem.gametesting.vol1.config
 import java.util.Properties
 
 /**
- * 这是调用[ConfigOperation]类的枚举类
+ * 这是调用[CoreConfigOperation]类的枚举类
  *
  * 请：
  *
@@ -47,11 +47,11 @@ enum class CoreConfig(val item:String) {
     LanguageResourcePath("Language_Resource_Path"),
     DefaultInstrument("DefaultInstrument"),
     DefaultPercussion("DefaultPercussion"),
+    PercussionChannel("PercussionChannel"),
     FontLight("Font_Light"),
     FontRegular("Font_Regular"),
     FontBold("Font_Bold"),
     UISkin("UISkin"),
-
 
     ;
 

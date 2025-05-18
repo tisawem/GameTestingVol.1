@@ -18,9 +18,7 @@
 
 package tisawem.gametesting.vol1.gdx
 
-import com.badlogic.gdx.Gdx
 import ktx.app.KtxGame
-import ktx.app.KtxScreen
 import tisawem.gametesting.vol1.Bridge
 import tisawem.gametesting.vol1.config.CoreConfigOperation
 import tisawem.gametesting.vol1.gdx.screen.GeneralScreen
@@ -29,13 +27,12 @@ import tisawem.gametesting.vol1.gdx.screen.GeneralScreen
  * @param bridge 提供一个实现类，以便传入画面要演奏的轨道，获取时间进度等...
  * @param scriptInCreateFunction 任何需要在create函数里面要执行的代码，比如切换演奏界面
  */
-class Game  (val bridge: Bridge ,val scriptInCreateFunction:(Game)-> Unit) : KtxGame<GeneralScreen>() {
+class Game  (val bridge: Bridge, val scriptInCreateFunction:(Game)-> Unit) : KtxGame<GeneralScreen>() {
 
 
 
     override fun create() {
 
-        CoreConfigOperation.configProperties=bridge.configProperties
         scriptInCreateFunction(this)
     }
 

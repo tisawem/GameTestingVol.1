@@ -18,16 +18,14 @@
 
 package tisawem.gametesting.vol1.lwjgl3.swing
 
-import com.badlogic.gdx.Gdx
-import ktx.app.KtxGame
-import tisawem.gametesting.vol1.lwjgl3.config.CoreConfig
+import tisawem.gametesting.vol1.config.CoreConfig
 import tisawem.gametesting.vol1.lwjgl3.config.DesktopConfig
 import tisawem.gametesting.vol1.lwjgl3.file.ExtensionFilter
 import tisawem.gametesting.vol1.lwjgl3.file.FileCheckingMethod
 import tisawem.gametesting.vol1.lwjgl3.i18n.Messages
 import tisawem.gametesting.vol1.lwjgl3.i18n.Messages.getMessages
-import tisawem.gametesting.vol1.lwjgl3.toolkit.Toolkit
 import tisawem.gametesting.vol1.lwjgl3.swing.FileLoader.loopingAskUserForFileOrAbandon
+import tisawem.gametesting.vol1.lwjgl3.toolkit.Toolkit
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.Font
@@ -36,8 +34,6 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 import javax.swing.*
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
 class Settings(frame: JFrame ) : JDialog(frame, getMessages("Settings"), true) {
 
@@ -204,8 +200,7 @@ East
     private val advanceTimeSlider = JSlider(
         -1000,
         1000,
-        (CoreConfig.ScreenAdvancedTime.load().toDoubleOrNull() ?: 0.0).toDuration(DurationUnit.SECONDS)
-            .toInt(DurationUnit.MILLISECONDS)
+        (CoreConfig.ScreenAdvancedTime.load().toIntOrNull() ?: 0)
     ).apply {
         advanceTImeLabel.text = "${getMessages("Screen_Advance_Time")} $value"
 
@@ -218,7 +213,7 @@ East
 
         addChangeListener {
             CoreConfig.ScreenAdvancedTime.write(
-                value.toDuration(DurationUnit.MILLISECONDS).toDouble(DurationUnit.SECONDS).toString()
+                value.toString()
             )
             advanceTImeLabel.text = "${getMessages("Screen_Advance_Time")} $value"
 

@@ -14,10 +14,14 @@ interface Bridge {
 
     /**
      * 一对播放和停止的函数
+     *
+     * 第一项是readyCallBack
+     * 第二项是finishCallBack
      */
-    val play:()-> Unit
+    fun  play (readyCallBack:(()->Unit)?=null,finishCallBack:(()->Unit)?=null)
 
-    val stop:()-> Unit
+    fun stop()
+
     /**
      * 获取当前播放进度
      *
@@ -28,14 +32,7 @@ interface Bridge {
     /**
      * 演奏轨道
      */
-    val generalInstrumentMusic :ArrayDeque<Score.General>
-    val percussionMusic : ArrayDeque<Score.Percussion>
+    val score :ArrayDeque<Score >
 
 
-
-
-    /**
-     * 传入配置文件
-     */
-    val configProperties: Properties
 }

@@ -93,7 +93,8 @@ class PlayFluidSynthConvertedWaveFile(
                 clip?.start()
 
             } catch (e: Exception) {
-
+                close()
+                finishCallback?.invoke()
                 ExceptionDialog(e, true, """
 1、ExecutionException
     生成Wave文件时出现错误
@@ -101,8 +102,7 @@ class PlayFluidSynthConvertedWaveFile(
 其他错误为未知错误，可能是音频播放出现意外，或者执行回调函数时抛出错误。
                 """.trimIndent())
 
-                close()
-                finishCallback?.invoke()
+
             }
         }.apply {
             name = "WavFile-Player-${midiFile.nameWithoutExtension}"

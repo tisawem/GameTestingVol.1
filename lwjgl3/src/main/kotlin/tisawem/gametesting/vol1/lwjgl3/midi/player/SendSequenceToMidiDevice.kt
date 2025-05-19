@@ -45,8 +45,8 @@ import javax.sound.midi.Sequencer
  */
 open class SendSequenceToMidiDevice(
     override val midiFile: File,
-    override val readyCallback: (() -> Unit)?,
-    override val finishCallback: (() -> Unit)?
+    override var readyCallback: (() -> Unit)?,
+    override var finishCallback: (() -> Unit)?
 ) : MidiPlayer {
 
     companion object {
@@ -106,11 +106,12 @@ open class SendSequenceToMidiDevice(
                     } catch (_: InterruptedException) {
                     }
                 }
+                stop()
             } catch (e: Throwable) {
                 stop()
                 ExceptionDialog(e, true, "Sequencer崩了，或者回调函数出错。")
             }
-        }.start()
+        }.apply { isDaemon=true }.start()
     }
 
     override fun stop() = try {

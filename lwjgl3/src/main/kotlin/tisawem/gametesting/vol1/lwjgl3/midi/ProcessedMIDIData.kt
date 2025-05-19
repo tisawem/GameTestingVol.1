@@ -40,7 +40,7 @@ class ProcessedMIDIData(kStdMidiFile: StandardMidiFile) {
         if (!kStdMidiFile.tracks.any { it.arcs.isNotEmpty() })
             ExceptionDialog(IllegalArgumentException(), false, "构造器传入的 $kStdMidiFile 实例没有音符。")
 
-        initSeatsMusic()//初始化各席位的乐谱
+
     }
 
 
@@ -147,6 +147,8 @@ class ProcessedMIDIData(kStdMidiFile: StandardMidiFile) {
     公共访问权限的API
      */
 
+
+
     val timeBasedSequence = kStdMidiFile.toTimeBasedSequence()
 
 
@@ -155,6 +157,9 @@ class ProcessedMIDIData(kStdMidiFile: StandardMidiFile) {
      */
     val scores = ArrayDeque<Score>()
 
-
+    init {
+//我感觉在这里，就应该初始化了所有的字段
+        initSeatsMusic()//初始化各席位的乐谱
+    }
 
 }

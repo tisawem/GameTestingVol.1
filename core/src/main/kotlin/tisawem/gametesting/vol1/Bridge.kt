@@ -12,13 +12,12 @@ interface Bridge {
 
     val timedBaseSequence: TimeBasedSequence
 
+    fun create(readyCallBack:(()->Unit)?=null,finishCallBack:(()->Unit)?=null)
+
     /**
      * 一对播放和停止的函数
-     *
-     * 第一项是readyCallBack
-     * 第二项是finishCallBack
      */
-    fun  play (readyCallBack:(()->Unit)?=null,finishCallBack:(()->Unit)?=null)
+    fun  play ()
 
     fun stop()
 

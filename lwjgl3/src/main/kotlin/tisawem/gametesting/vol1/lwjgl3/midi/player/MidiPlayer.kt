@@ -48,9 +48,9 @@ interface MidiPlayer {
     //主构造函数
     val midiFile: File
     //绑定开始播放，和播放完毕的回调函数
-    val readyCallback :(() -> Unit)?
+    var readyCallback :(() -> Unit)?
 
-    val finishCallback :(() -> Unit)?
+    var finishCallback :(() -> Unit)?
 
 
     //播放

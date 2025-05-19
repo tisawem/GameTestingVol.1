@@ -18,24 +18,16 @@
 
 package tisawem.gametesting.vol1.lwjgl3.swing
 
-import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
-import org.wysko.kmidi.midi.TimeBasedSequence
-import tisawem.gametesting.vol1.Bridge
-import tisawem.gametesting.vol1.gdx.Game
-import tisawem.gametesting.vol1.gdx.screen.Perform
 import tisawem.gametesting.vol1.lwjgl3.config.DesktopConfig
 import tisawem.gametesting.vol1.lwjgl3.file.ExtensionFilter
 import tisawem.gametesting.vol1.lwjgl3.file.FileCheckingMethod
 import tisawem.gametesting.vol1.lwjgl3.i18n.Messages.getMessages
 import tisawem.gametesting.vol1.lwjgl3.midi.player.MidiDeviceManager
 import tisawem.gametesting.vol1.lwjgl3.swing.FileLoader.loopingAskUserForFileOrAbandon
-import tisawem.gametesting.vol1.midi.Score
 import java.awt.BorderLayout
 import java.awt.Font
 import java.awt.GridLayout
-import java.util.Properties
 import javax.swing.*
-import kotlin.time.Duration
 
 class HomePage( ) : JFrame("GameTestingVol.1 ${getMessages("HomePage")}") {
     init {
@@ -107,40 +99,15 @@ add(version, BorderLayout.CENTER)
      */
 
 
+
+
     private val play = JButton(getMessages("Play")).apply {
         usingGlobalProperties()
         toolTipText = getMessages("Play_Tips")
 
 
         addActionListener {
-         this@HomePage.  isVisible=false
-            Lwjgl3Application(Game(object : Bridge {
-                override val timedBaseSequence: TimeBasedSequence
-                    get() = TODO("Not yet implemented")
-
-                override fun play(readyCallBack: (() -> Unit)?, finishCallBack: (() -> Unit)?) {
-                    TODO("Not yet implemented")
-                }
-
-                override fun stop() {
-                    TODO("Not yet implemented")
-                }
-
-                override fun getPosition(): Duration? {
-                    TODO("Not yet implemented")
-                }
-
-                override val score: ArrayDeque<Score>
-                    get() = TODO("Not yet implemented")
-
-
-            }) {
-                it.addScreen<Perform>(Perform(it))
-               it. setScreen<Perform>()
-
-            })
-
-            this@HomePage.     isVisible=true
+            Play(this@HomePage)
         }
     }
 
@@ -153,7 +120,7 @@ add(version, BorderLayout.CENTER)
            loopingAskUserForFileOrAbandon({FileLoader.loadingFileFromJFileChooser(
                DesktopConfig.MIDIFile.load(),
                ExtensionFilter.MIDIFile.filter(),
-               FileCheckingMethod.MIDIFile.method
+               { FileCheckingMethod.MIDIFile.method(it) }
            )})?.let { DesktopConfig.MIDIFile.write(it.canonicalPath)
            midiFilePathTextArea.text=it.canonicalPath
 
@@ -174,7 +141,7 @@ add(version, BorderLayout.CENTER)
             loopingAskUserForFileOrAbandon({FileLoader.loadingFileFromJFileChooser(
                 DesktopConfig.MIDIOutputDevice.load(),
                 ExtensionFilter.SoundFont.filter(),
-                FileCheckingMethod.SoundFont.method
+                { FileCheckingMethod.SoundFont.method(it) }
             )})?.let { DesktopConfig.MIDIOutputDevice.write(it.canonicalPath)
                 deviceOrSf2PathTextArea.text=it.canonicalPath
 
@@ -188,7 +155,7 @@ add(version, BorderLayout.CENTER)
             this@HomePage.dispose()
         }
     }
-    private val eastBuuttons = JPanel(GridLayout(5, 1 )).apply {
+    private val eastButtons = JPanel(GridLayout(5, 1 )).apply {
         add(play)
         add(settings)
         add(openMidiFile)
@@ -255,7 +222,7 @@ add(version, BorderLayout.CENTER)
         border = BorderFactory.createEmptyBorder(10, 10, 10, 10) // 添加边缘边距
 
         add(titlePanel, BorderLayout.NORTH)
-        add(eastBuuttons, BorderLayout.EAST)
+        add(eastButtons, BorderLayout.EAST)
         add(statuePanel, BorderLayout.CENTER)
         add(midiDevicePanel, BorderLayout.SOUTH)
 

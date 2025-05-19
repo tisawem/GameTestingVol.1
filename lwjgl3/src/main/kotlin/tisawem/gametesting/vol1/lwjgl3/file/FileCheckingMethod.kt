@@ -19,7 +19,8 @@
 package tisawem.gametesting.vol1.lwjgl3.file
 
 import arrow.core.Either
-import arrow.core.Either.*
+import arrow.core.Either.Left
+import arrow.core.Either.Right
 import org.jjazz.fluidsynthjava.api.FluidSynthJava
 import org.wysko.kmidi.midi.reader.StandardMidiFileReader
 import org.wysko.kmidi.midi.reader.readFile
@@ -32,76 +33,99 @@ import javax.sound.midi.MidiSystem
  * 提供一个函数，如果文件有效，返回Right(File)，反之，Left(String)，包含原因。
  *
  * 流程就是：路径是不是空白，路径是不是指向文件，能否解析这个文件，这个文件是否包含必要信息
- * @see  tisawem.gametesting.vol1.lwjgl3.swing.FileLoader.loadingFileFromJFileChooser
- * @param method 一个函数，接收一个[File]，返回[arrow.core.Either.Right]（File）或 [arrow.core.Either.Left]（String）
+ * @param method 一个函数，接收一个[File]，返回[Right]（File）或 [Left]（String）
  */
-enum class FileCheckingMethod(val method: (File) -> Either<String, File>) {
-    MIDIFile(  {it: File ->
-     try {
-         MidiSystem.getSequence(it)//是不是javax.sound.midi承认的序列
+enum class FileCheckingMethod(
+    private val notOpenKey: String,
+    private val notFileKey: String,
+    private val doCheck: (File) -> Either<String, File>
+) {
+    MIDIFile(
+        notOpenKey = "Has_Not_Open_MIDI",
+        notFileKey = "Path_Not_Point_To_MIDI",
+        doCheck = { file ->
 
+            try {
+                MidiSystem.getSequence(file)
+                if (StandardMidiFileReader().readFile(file)
+                        .tracks
+                        .any { it.arcs.isNotEmpty() }
+                ) {
+                    Right(file)
+                } else {
+                    Left(getMessages("MIDI_File_Without_Note"))
+                }
 
-         //是不是kmidi承认的MIDI文件，若是，检查是否有Arc事件。
+            } catch (_: Throwable) {
+                Left(getMessages("Cannot_Load_MIDI"))
+            }
 
-         if (StandardMidiFileReader().readFile(it).tracks.any { track -> track.arcs.isNotEmpty() }) null
-         else getMessages("MIDI_File_Without_Note")//有，返回文件，否则提示该文件无音符。
-
-     }catch (_: Throwable){
-         getMessages("Cannot_Load_This_File")
-     }
-    } as (File) -> String?),
-    SoundFont( {it: File ->
-
-        val instance = FluidSynthJava()//创建FluidSynthJava实例
-        try {
-            instance.open(false)
-            instance.loadSoundFont(it)//尝试读取
-            null
-        } catch (_: Throwable){
-            getMessages("Cannot_Load_This_File")
-        }finally {
-//关闭实例
-            instance.close()
         }
-    }as (File) -> String?),
-    Image( {it: File ->
-        try {
-            ImageIO.read(it)!!
-            null
-        }catch (_: Throwable){
-            getMessages("Cannot_Load_This_File")
-        }
-    }as (File) -> String?);
 
+    ),
+
+    SoundFont(
+        notOpenKey = "Has_Not_Open_SF2",
+        notFileKey = "Path_Not_Point_To_SF2",
+        doCheck = { file ->
+            // FluidSynthJava implements AutoCloseable，所以可以用 use
+            catching("Cannot_Load_SF2") {
+                FluidSynthJava().let { synth ->
+                    synth.open(false)
+                    synth.loadSoundFont(file)
+                }
+                file
+            }
+        }
+    ),
+
+    Image(
+        notOpenKey = "Has_Not_Open_Image",
+        notFileKey = "Path_Not_Point_To_Image",
+        doCheck = { file ->
+            catching("Cannot_Load_Image") {
+                requireNotNull(ImageIO.read(file))
+                file
+            }
+        }
+    );
 
     /**
-     * ！！！！！！！！！！特别注意事项！！！！！！！！！！！
-     *
-     * notForPrimaryConstructor，它是占位用的，以防构造器冲突
-     *
-     * Overload resolution ambiguity between candidates:
-     * constructor(method: (File) -> Either<String, File>): FileCheckingMethod
-     * constructor(issue: (File) -> String?): FileCheckingMethod
-     *
-     * 注意枚举常量的写法：[MIDIFile]，[SoundFont]，[Image]
-     * 一个传入了notForPrimaryConstructor形参，一个使用 issue = 指定x形参，一个使用强制转换 as (File) -> String?
-     * 才会让编译器不报错
-     *
-     * ！！！！！！！！！！！！！！！！！！！！！！！！！！！
+     * 对外暴露的方法，不变的调用签名：
+     * 调用方依旧只是 FileCheckingMethod.Xxx.method(file)
      */
-    constructor( issue: (File) -> String? ) : this(method = {
-        if (it.path.isBlank()) {
-            Left(getMessages("File_Path_Is_Blank"))
-        }
-        if (!it.isFile) {
-            Left(getMessages("Path_Not_Point_To_File"))
-        }
+    fun method(file: File): Either<String, File> =
+        checkFile(file, notOpenKey, notFileKey, doCheck)
+}
 
+/**
+ * catch + finally 通用写法 —— runCatching + fold
+ */
+inline fun <R> catching(resultErrKey: String, block: () -> R): Either<String, R> =
+    runCatching { block() }
+        .fold(
+            { Right(it) },
+            { Left(getMessages(resultErrKey)) }
+        )
 
-        issue(it)?.let { issue ->
-            Left(issue)
-        }?: Right(it)
-
-
-    })
+/**
+ * 通用的 File 前置检查：
+ *  1. path.isBlank()
+ *  2. !isFile
+ *  3. 业务检查 block
+ *
+ * @param file         待检查的文件
+ * @param notOpenKey   路径空白时的多语言 key
+ * @param notFileKey   不是文件时的多语言 key
+ * @param block        真正的业务检查（在文件存在且路径不空时才执行）
+ */
+inline fun checkFile(
+    file: File,
+    notOpenKey: String,
+    notFileKey: String,
+    block: (File) -> Either<String, File>
+): Either<String, File> = when {
+    file.path.isBlank() -> Left(getMessages(notOpenKey))
+    !file.isFile -> Left(getMessages(notFileKey))
+    else -> block(file)
 }

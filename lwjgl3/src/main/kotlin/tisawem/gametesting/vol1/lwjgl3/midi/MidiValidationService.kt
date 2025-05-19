@@ -21,9 +21,9 @@ package tisawem.gametesting.vol1.lwjgl3.midi
 import arrow.core.Either
 import org.wysko.kmidi.midi.reader.StandardMidiFileReader
 import org.wysko.kmidi.midi.reader.readFile
-import tisawem.gametesting.vol1.i18n.Messages
 import tisawem.gametesting.vol1.lwjgl3.config.DesktopConfig
 import tisawem.gametesting.vol1.lwjgl3.file.FileCheckingMethod
+import tisawem.gametesting.vol1.lwjgl3.i18n.Messages
 import tisawem.gametesting.vol1.lwjgl3.swing.ExceptionDialog
 import tisawem.gametesting.vol1.lwjgl3.midi.player.MidiDeviceManager
 import java.io.File

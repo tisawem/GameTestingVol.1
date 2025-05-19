@@ -88,7 +88,7 @@ class Settings(frame: JFrame ) : JDialog(frame, getMessages("Settings"), true) {
                 FileLoader.loadingFileFromJFileChooser(
                     CoreConfig.PerformBackgroundImage.load(),
                     ExtensionFilter.Image.filter(),
-                    FileCheckingMethod.Image.method
+                    { FileCheckingMethod.Image.method(it) }
                 )
             }?.let {
                 CoreConfig.PerformBackgroundImage.write(it.canonicalPath)

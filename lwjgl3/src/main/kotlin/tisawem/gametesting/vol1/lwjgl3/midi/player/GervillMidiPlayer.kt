@@ -25,8 +25,8 @@ import javax.sound.midi.*
 
 class GervillMidiPlayer(
     override val midiFile: File,
-    override val readyCallback: (() -> Unit)? = null,
-    override val finishCallback: (() -> Unit)? = null
+    override var readyCallback: (() -> Unit)? = null,
+    override var finishCallback: (() -> Unit)? = null
 ) : SendSequenceToMidiDevice(midiFile,readyCallback,finishCallback) {
 
 

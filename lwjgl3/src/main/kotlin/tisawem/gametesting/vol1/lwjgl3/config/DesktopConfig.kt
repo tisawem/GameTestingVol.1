@@ -39,28 +39,7 @@ enum class DesktopConfig(val item: String) {
 
     ;
 
-    /**
-     * 初始化各配置读写类的Properties实例
-     */
-    init {
-    val desktopInputStream=DesktopConfig::class.java.classLoader.getResourceAsStream("DesktopConfig.properties")?: ExceptionDialog(
-        FileNotFoundException(),false,"DesktopConfig.properties 文件没找到。").onExit()
 
-
-    DesktopConfigOperation.configProperties= Properties().apply {
-        load(desktopInputStream)
-        desktopInputStream.close()
-    }
-
-    val coreInputStream=DesktopConfig::class.java.classLoader.getResourceAsStream("CoreConfig.properties")?: ExceptionDialog(
-        FileNotFoundException(),false,"CoreConfig.properties 文件没找到。").onExit()
-
-    CoreConfigOperation.configProperties== Properties().apply {
-        load(coreInputStream)
-        coreInputStream.close()
-    }
-
-}
 
 
 

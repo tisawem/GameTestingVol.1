@@ -28,8 +28,8 @@ import java.util.concurrent.FutureTask
 import javax.sound.sampled.*
 class PlayFluidSynthConvertedWaveFile(
     override val midiFile: File,
-    override val readyCallback: (() -> Unit)?,
-    override val finishCallback: (() -> Unit)?
+    override var readyCallback: (() -> Unit)?,
+    override var finishCallback: (() -> Unit)?
 ) : MidiPlayer {
 
     // 使用FutureTask来异步生成WAV文件
@@ -106,6 +106,7 @@ class PlayFluidSynthConvertedWaveFile(
             }
         }.apply {
             name = "WavFile-Player-${midiFile.nameWithoutExtension}"
+            isDaemon=true
             start()
         }
     }

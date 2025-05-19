@@ -26,7 +26,7 @@ class Renkween(
         const val PICTURE_HEIGHT = 768f
         const val IMAGE_BASE_DIRECTORY = "Musician/Renkween"
         //音符最少演奏时长
-        val LEAST_PERFORM_LENGTH =0.08.toDuration(DurationUnit.MILLISECONDS)
+        val LEAST_PERFORM_LENGTH =0.08.toDuration(DurationUnit.SECONDS)
 
         // 钢琴的有效音符范围
         const val MIN_NOTE = 21

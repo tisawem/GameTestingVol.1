@@ -137,21 +137,28 @@ class Play(frame: JFrame) : JDialog(frame, true) {
 
 
 
+try {
 
-            Lwjgl3Application(Game(bridge) {
-                it.addScreen<Perform>(Perform(it))
-                it.setScreen<Perform>()
-            }, Lwjgl3ApplicationConfiguration().apply {
+    Lwjgl3Application(Game(bridge) {
+        it.addScreen<Perform>(Perform(it))
+        it.setScreen<Perform>()
+    }, Lwjgl3ApplicationConfiguration().apply {
+        title="GameTestingVol.1  ${DesktopConfig.MIDIFile.load()}"
+        if (DesktopConfig.FullScreen.load().toBoolean()){
+            setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode())
+        }else{
+            val (w,h)= Toolkit.getWindowedResolution()
+            setWindowedMode(w,h)
+        }
 
-                if (DesktopConfig.FullScreen.load().toBoolean()){
-                    setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode())
-                }else{
-                    val (w,h)= Toolkit.getWindowedResolution()
-                    setWindowedMode(w,h)
-                }
+    })
+}catch (e: Throwable){
+    ExceptionDialog(e,true,"演奏时出现未知错误")
+}finally {
 
-            })
-            frame.isVisible = true
+    frame.isVisible = true
+}
+
 
 
         } else {

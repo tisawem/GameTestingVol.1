@@ -20,6 +20,7 @@ package tisawem.gametesting.vol1.lwjgl3.midi.player
 
 import tisawem.gametesting.vol1.lwjgl3.config.DesktopConfig
 import tisawem.gametesting.vol1.lwjgl3.swing.ExceptionDialog
+import tisawem.gametesting.vol1.midi.synth.MidiPlayer
 import java.io.File
 import javax.sound.midi.*
 
@@ -27,21 +28,91 @@ class GervillMidiPlayer(
     override val midiFile: File,
     override var readyCallback: (() -> Unit)? = null,
     override var finishCallback: (() -> Unit)? = null
-) : SendSequenceToMidiDevice(midiFile,readyCallback,finishCallback) {
+) : MidiPlayer {
 
-
-
-    private var synthesizer: Synthesizer? = try {
+    private var synthesizer = try {
         MidiSystem.getSynthesizer().apply {
+            open() // Ensure synthesizer is open before operations
             unloadAllInstruments(defaultSoundbank)
-            loadAllInstruments( MidiSystem.getSoundbank(File(DesktopConfig.MIDIOutputDevice.load())))
+            // Load the custom SoundFont as instructed
+            loadAllInstruments(MidiSystem.getSoundbank(File(DesktopConfig.MIDIOutputDevice.load())))
         }
-    }catch (e: Throwable){
+    } catch (e: Throwable) {
         ExceptionDialog(e, true, "Gervill合成器初始化错误。")
         null
     }
 
-    override val midiDevice=synthesizer
+    companion object {
+        private const val POLLING_INTERVAL = 2000L//轮询间隔
+    }
 
+    private var isPlaying = false
 
+    private var sequencer: Sequencer? = try {
+        // Initialize sequencer connected to the synthesizer
+        MidiSystem.getSequencer(synthesizer == null).apply {
+            open()
+            synthesizer?.let { synth ->
+                if (!synth.isOpen) synth.open() // Double-check synth is open
+
+                // Connect sequencer to synthesizer
+                transmitter.receiver = synth.receiver
+            }
+            sequence = MidiSystem.getSequence(midiFile)
+        }
+    } catch (e: Exception) {
+        ExceptionDialog(e, true, "Gervill合成器初始化错误。")
+        null
+    }
+
+    override fun play() {
+        if (isPlaying || sequencer == null) {
+            ExceptionDialog(IllegalStateException(), true, "该实例已经在播放了。")
+            return
+        }
+
+        Thread {
+            try {
+                sequencer?.start()
+                isPlaying = true
+                readyCallback?.invoke()
+
+                // Monitor until sequencer stops running
+                while (sequencer?.isRunning == true) {
+                    try {
+                        Thread.sleep(POLLING_INTERVAL)
+                    } catch (_: InterruptedException) {
+                        // Interrupted, break out
+                        break
+                    }
+                }
+                stop()
+            } catch (e: Throwable) {
+                ExceptionDialog(e, true, "Sequencer崩了，或者回调函数出错。")
+                stop()
+            }
+        }.apply {
+            isDaemon = true
+            name = "GervillPlaybackMonitor" // Named thread for easier debugging
+        }.start()
+    }
+
+    override fun stop() = try {
+        if (isPlaying) {
+            isPlaying = false
+            sequencer?.stop()
+            sequencer?.close()
+            sequencer = null
+            synthesizer?.close()
+            synthesizer = null
+        }
+        Unit
+    } catch (e: Exception) {
+        // Log exception but don't display to user since we're in cleanup
+        e.printStackTrace()
+    } finally {
+        finishCallback?.invoke()
+    }
+
+    override fun getMicroSecondPosition(): Long? = if (isPlaying) sequencer?.microsecondPosition else null
 }

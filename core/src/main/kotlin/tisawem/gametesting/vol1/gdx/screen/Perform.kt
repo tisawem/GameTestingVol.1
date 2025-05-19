@@ -1,9 +1,13 @@
 package tisawem.gametesting.vol1.gdx.screen
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
+import com.badlogic.gdx.InputAdapter
+import com.badlogic.gdx.graphics.g2d.BitmapFont
+import com.badlogic.gdx.scenes.scene2d.Actor
 import tisawem.gametesting.vol1.config.CoreConfig
 import tisawem.gametesting.vol1.gdx.Game
-import tisawem.gametesting.vol1.gdx.GridLayout
+import tisawem.gametesting.vol1.gdx.OverlayInstrumentLayout
 import tisawem.gametesting.vol1.gdx.musician.AllocateMusicianFunctions
 import tisawem.gametesting.vol1.midi.InstrumentStandard
 import kotlin.time.Duration
@@ -17,12 +21,9 @@ class Perform(private val gameInstance: Game) : GeneralScreen(gameInstance) {
 
 
     /**
-     * 往舞台放置的乐手
+     * 布局
      */
-    private val gridLayout = GridLayout().apply {
-        setSize(viewport.worldWidth,viewport.worldHeight)
-
-    }
+    private val layout = OverlayInstrumentLayout()
 
     /**
      * 提前演奏的时间
@@ -36,9 +37,21 @@ class Perform(private val gameInstance: Game) : GeneralScreen(gameInstance) {
     private fun getCurrentPosition() = (gameInstance.bridge.getPosition() ?: Duration.ZERO) + advancedTime
 
     /**
-     * 序列总时长
+     * 序列总时长，不含ScreenAdvancedTime
+     *
+     * 不保证与MIDI播放器提供的序列总时长一致
+     *
+     * 单位：秒
      */
-    private val sequenceLength = gameInstance.bridge.timedBaseSequence.duration + advancedTime
+    private val sequenceLength = gameInstance.bridge.timedBaseSequence.duration.toDouble(DurationUnit.SECONDS).toFloat()
+
+    /**
+     * 内部计数器，以免播放器卡死永远不会退出
+     *
+     * 单位：秒
+     */
+    private var internalTimer=0f
+
 
 
     /**
@@ -46,22 +59,57 @@ class Perform(private val gameInstance: Game) : GeneralScreen(gameInstance) {
      */
     private var ready=false
 
+    /**
+     * 已经播放标志
+     *
+     * 只有played为true，ready是false时，程序才会关闭
+     */
+    private var played=false
+
+    private val generalActors= ArrayDeque<Actor>()
+    private val percussionActors= ArrayDeque<Actor>()
 
     init {
-        gameInstance.bridge.score.filter { it.arcs.isEmpty() }
-            .forEach {
-                val instrumentChange = it.instrumentChanges.firstOrNull()
-                    ?: InstrumentStandard(it.arcs.first().channel).defaultInstrumentChange//保证至少有1个乐器变更事件
+        Gdx.input.inputProcessor = object : InputAdapter() {
+            override fun keyDown(keycode: Int): Boolean {
+                if (keycode == Input.Keys.ESCAPE) {
+Gdx.app.exit()
+
+                }
+                return true
+            }
+        }
 
 
-                AllocateMusicianFunctions.RANDOM.allocate(instrumentChange)
-                    ?.invoke(gameInstance.bridge.timedBaseSequence, it) { getCurrentPosition() }?.let { musician ->
-                        gridLayout.addActor(musician.getActor())
-                    }
+
+        gameInstance.bridge.score.filter { it.arcs.isNotEmpty() }.forEach { score ->
+                val instrumentChange = score.instrumentChanges.firstOrNull()
+                    ?: InstrumentStandard(score.arcs.first().channel).defaultInstrumentChange//保证至少有1个乐器变更事件
+
+                //分配Actor
+                AllocateMusicianFunctions.RANDOM.allocate(instrumentChange)?.let { musician->
+                   when( score.arcs.first().channel){
+                       InstrumentStandard.PERCUSSION_CHANNEL->percussionActors.add(musician(gameInstance.bridge.timedBaseSequence,score) { getCurrentPosition() }.getActor())
+                   else -> generalActors.add(musician(gameInstance.bridge.timedBaseSequence,score) { getCurrentPosition() }.getActor())
+
+                   }
+
+                }
+
+
+
             }
 
-        stage.addActor(gridLayout)
-gameInstance.bridge.create  ({ready=true}){ready=false}
+        layout.apply {
+            setMelodicInstruments(generalActors)
+            setPercussionInstruments(percussionActors)
+            this@Perform.stage .addActor(this)
+            setFillParent(true)
+        }
+
+
+
+gameInstance.bridge.create  ({ready=true}){ready=false;played=true }
 gameInstance.bridge.play()
 
     }
@@ -70,17 +118,20 @@ gameInstance.bridge.play()
     override fun render(delta: Float) {
         if (ready ) {
             super.render(delta)
-        }else{
+
+            internalTimer+=delta
+        }else if (played){
             Gdx.app.exit()
 
         }
 
+        if (internalTimer>sequenceLength) Gdx.app.exit()
 
     }
 
     override fun dispose() {
         super.dispose()
-
+gameInstance.bridge.stop()
     }
 }
 

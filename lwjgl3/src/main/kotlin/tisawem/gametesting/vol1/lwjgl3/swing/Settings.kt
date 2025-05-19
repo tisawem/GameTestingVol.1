@@ -132,20 +132,23 @@ class Settings(frame: JFrame ) : JDialog(frame, getMessages("Settings"), true) {
 
     private val centerGroup = JPanel(GridLayout(4, 1)).apply {
 
-
         val using = DesktopConfig.UsingGervill.load().toBoolean()
         val fluid = JRadioButton("FluidSynth", !using).apply {
             usingGlobalProperties()
             toolTipText = getMessages("FluidSynth_Tips")
-            addChangeListener {
-                DesktopConfig.UsingGervill.write("false")
+            addActionListener {
+                if (isSelected) {
+                    DesktopConfig.UsingGervill.write("false")
+                }
             }
         }
         val gervill = JRadioButton("Gervill", using).apply {
             usingGlobalProperties()
             toolTipText = getMessages("Gervill_Tips")
-            addChangeListener {
-                DesktopConfig.UsingGervill.write("true")
+            addActionListener {
+                if (isSelected) {
+                    DesktopConfig.UsingGervill.write("true")
+                }
             }
         }
         ButtonGroup().apply {

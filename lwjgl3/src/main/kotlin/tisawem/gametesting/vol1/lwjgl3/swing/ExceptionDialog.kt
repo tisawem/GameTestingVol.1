@@ -97,7 +97,8 @@ class ExceptionDialog (
             ).apply {
                 font = Font(null, Font.PLAIN, 16)
                 addActionListener {
-                    dialog.dispose() }
+                    dialog.dispose()
+                }
             }
             add(continueButton)
             add(Box.createRigidArea(Dimension(10, 0)))

@@ -100,7 +100,7 @@ open class SendSequenceToMidiDevice(
                 isPlaying = true
                 readyCallback?.invoke()
 
-                while (sequencer!!.isRunning) {
+                while (sequencer?.isRunning == true) {
                     try {
                         Thread.sleep(POLLING_INTERVAL)
                     } catch (_: InterruptedException) {
@@ -110,6 +110,7 @@ open class SendSequenceToMidiDevice(
             } catch (e: Throwable) {
                 stop()
                 ExceptionDialog(e, true, "Sequencer崩了，或者回调函数出错。")
+
             }
         }.apply { isDaemon=true }.start()
     }

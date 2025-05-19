@@ -19,7 +19,7 @@ import kotlin.math.min
  * 减少样板代码，统一外观的抽象屏幕类
  */
 abstract  class GeneralScreen (val game: KtxGame<GeneralScreen>): KtxScreen{
-   private val batch= SpriteBatch()
+   val batch= SpriteBatch()
     val viewport= FitViewport(3840f,2160f)
 
 

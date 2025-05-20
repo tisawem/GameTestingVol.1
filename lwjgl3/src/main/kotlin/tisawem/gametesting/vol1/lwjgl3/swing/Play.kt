@@ -1,11 +1,25 @@
+/**
+ *     GameTestingVol.1
+ *     Copyright (C) 2020-2025 Tisawem東北項目
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see https://www.gnu.org/licenses/.
+ */
+
 package tisawem.gametesting.vol1.lwjgl3.swing
 
-import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
-import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.utils.ScreenUtils
-import org.wysko.kmidi.midi.TimeBasedSequence
 import tisawem.gametesting.vol1.Bridge
 import tisawem.gametesting.vol1.gdx.Game
 import tisawem.gametesting.vol1.gdx.screen.Perform
@@ -14,8 +28,6 @@ import tisawem.gametesting.vol1.lwjgl3.i18n.Messages.getMessages
 import tisawem.gametesting.vol1.lwjgl3.midi.MidiValidationService
 import tisawem.gametesting.vol1.lwjgl3.midi.player.MidiDeviceManager
 import tisawem.gametesting.vol1.lwjgl3.toolkit.Toolkit
-import tisawem.gametesting.vol1.midi.Score
-import tisawem.gametesting.vol1.midi.synth.MidiPlayer
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.Font
@@ -56,7 +68,7 @@ class Play(frame: JFrame) : JDialog(frame, true) {
             } else {
                 stringListToString(
                     index + 1,
-                    "$string${if (string.isEmpty()) "" else "\n"/*以免第一行空行*/}${get(index)}"
+                    "$string${if (string.isEmpty()) "" else "\n\n"/*以免第一行空行*/}${get(index)}"
                 )
             }
 
@@ -100,65 +112,66 @@ class Play(frame: JFrame) : JDialog(frame, true) {
 
     init {
         if (problems.isEmpty()) {
-            dispose()
-            frame.isVisible = false
 
-            val processedMIDIData = MidiValidationService.createMidiEventProcess()!!
-            val player = MidiDeviceManager.getPlayer(File(DesktopConfig.MIDIFile.load()))
+            try {
+                dispose()
+                frame.isVisible = false
 
-            val bridge = object : Bridge {
-                override val timedBaseSequence = processedMIDIData.timeBasedSequence
+                val processedMIDIData = MidiValidationService.createMidiEventProcess()!!
+                val player = MidiDeviceManager.getPlayer(File(DesktopConfig.MIDIFile.load()))
 
-                override fun create(readyCallBack: (() -> Unit)?, finishCallBack: (() -> Unit)?) {
-                    player.readyCallback = readyCallBack
-                    player.finishCallback = finishCallBack
+                val bridge = object : Bridge {
+                    override val timedBaseSequence = processedMIDIData.timeBasedSequence
+
+                    override fun create(readyCallBack: (() -> Unit)?, finishCallBack: (() -> Unit)?) {
+                        player.readyCallback = readyCallBack
+                        player.finishCallback = finishCallBack
+                    }
+
+                    override fun play() {
+                        player.play()
+                    }
+
+
+                    override fun stop() {
+                        player.stop()
+
+                    }
+
+                    override fun getPosition(): Duration? =
+                        player.getMicroSecondPosition()?.toDuration(DurationUnit.MICROSECONDS)
+
+                    override val score = processedMIDIData.scores
+
                 }
 
-                override fun play() {
-                    player.play()
-                }
 
 
-                override fun stop()  {
-                    player.stop()
 
-                }
 
-                override fun getPosition(): Duration? =
-                    player.getMicroSecondPosition()?.toDuration(DurationUnit.MICROSECONDS)
 
-                override val score = processedMIDIData.scores
 
+
+
+                Lwjgl3Application(Game(bridge) {
+                    it.addScreen<Perform>(Perform(it))
+                    it.setScreen<Perform>()
+                }, Lwjgl3ApplicationConfiguration().apply {
+                    title = "GameTestingVol.1  ${DesktopConfig.MIDIFile.load()}"
+                    if (DesktopConfig.FullScreen.load().toBoolean()) {
+                        setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode())
+                    } else {
+                        val (w, h) = Toolkit.getWindowedResolution()
+                        setWindowedMode(w, h)
+                    }
+
+                })
+            } catch (e: Throwable) {
+                ExceptionDialog(e, true, "未知错误\n可以尝试再播放一遍。")
+            } finally {
+
+                frame.isVisible = true
             }
-
-
-
-
-
-
-
-try {
-
-    Lwjgl3Application(Game(bridge) {
-        it.addScreen<Perform>(Perform(it))
-        it.setScreen<Perform>()
-    }, Lwjgl3ApplicationConfiguration().apply {
-        title="GameTestingVol.1  ${DesktopConfig.MIDIFile.load()}"
-        if (DesktopConfig.FullScreen.load().toBoolean()){
-            setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode())
-        }else{
-            val (w,h)= Toolkit.getWindowedResolution()
-            setWindowedMode(w,h)
-        }
-
-    })
-}catch (e: Throwable){
-    ExceptionDialog(e,true,"演奏时出现未知错误")
-}finally {
-
-    frame.isVisible = true
-}
-
 
 
         } else {

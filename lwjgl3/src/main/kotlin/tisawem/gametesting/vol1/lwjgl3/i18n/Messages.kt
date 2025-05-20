@@ -5,7 +5,7 @@
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
+ *     any later version.
  *
  *     This program is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,7 +30,7 @@ import tisawem.gametesting.vol1.lwjgl3.swing.ExceptionDialog
  *
  * This object ensures that the appropriate message bundle is loaded according to the configured or system-default language.
  * It provides thread-safe initialization and retrieval of messages using keys. If a message key is not found,
- * it returns a placeholder in the format `[key]` and logs an error dialog for debugging purposes.
+ * it returns a placeholder in the format `key` and logs an error dialog for debugging purposes.
  *
  * The `SupportedLanguage` enum defines the languages supported by the application, each associated with a specific locale.
  * The language configuration is managed through the `ConfigItem.Language` property, which persists the selected language
@@ -43,11 +43,6 @@ import tisawem.gametesting.vol1.lwjgl3.swing.ExceptionDialog
  * Missing or invalid resources will trigger an error dialog to assist in diagnosing issues.
  */
 object Messages {
-    enum class SupportedLanguage(val locale: ULocale) {
-        Default(ULocale.ENGLISH), Zh(ULocale.CHINESE), Ja(ULocale.JAPANESE);
-
-        override fun toString(): String =locale.displayLanguage
-    }
 
     private var bundle: UResourceBundle? = null
     private var currentLanguage: String = ""
@@ -71,6 +66,7 @@ object Messages {
                             DesktopConfig.LanguageResourcePath.load(), configLanguage, Messages.javaClass.classLoader
                         )
                         currentLanguage = configLanguage
+                    CoreConfig.Language.write( currentLanguage)
 
                 }
             }
@@ -116,4 +112,10 @@ object Messages {
     fun getMessagesWithLineFeedReplace(key: String)=getMessages(key).replace("<LF>", "\n")
 
 
+}
+
+enum class SupportedLanguage(val locale: ULocale) {
+    Default(ULocale.ENGLISH), Zh(ULocale.CHINESE), Ja(ULocale.JAPANESE);
+
+    override fun toString(): String =locale.displayLanguage
 }

@@ -2,7 +2,7 @@
 
 **Copyright (C) 2020-2025 [Tisawem東北項目](https://space.bilibili.com/367911078)**
 
-**源代码许可证：** [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html) or later
+**源代码许可证：** [GNU General Public License v3.0](LICENSES/LICENSE_GPLv3.txt) or later
 
 * $$目录$$
 
@@ -41,19 +41,20 @@
 之后的一段时间，我再研究素材的问题。
 ## 该项目使用的包，框架，及主要功能
 
-| 包，框架                                                                                      | 主要功能                                          |
-|-------------------------------------------------------------------------------------------|-----------------------------------------------|
-| [libGDX](https://libgdx.com/), [KTX](https://libktx.github.io/)                           | 渲染画面                                          |
-| [org.wysko.kmidi](https://github.com/wyskoj/kmidi)                                        | 解析MIDI文件数据。                                   |
-| [Java Sound API](https://docs.oracle.com/javase/8/docs/technotes/guides/sound/index.html) | 将MIDI序列发送至MIDI OUT设备，或者Gervill；播放Wave音频。      |
-| [org.jjazz.fluidsynthjava](https://github.com/jjazzboss/FluidSynthJava)                   | 内置合成器的方案，将MIDI序列转为Wave音频，由Java Sound API进行播放。 |
-| [arrow-kt](https://arrow-kt.io/)                                                          | 提供Either和Tuple类型                              |
-| [ICU4J](https://icu.unicode.org/home)                                                     | 提供国际化支持                                       |
-| [Kotlin Reflect](https://kotlinlang.org/)                                                 | Kotlin反射支持                                    |
+| 包，框架                                                                                      | 主要功能                                            | 许可证                                                                                                  |
+|-------------------------------------------------------------------------------------------|-------------------------------------------------|------------------------------------------------------------------------------------------------------|
+| [libGDX](https://libgdx.com/), [KTX](https://libktx.github.io/)                           | 渲染画面                                            | LibGDX：[Apache 2.0](LICENSES/LICENSE_Apache%202.0.txt) KTX：[CC0 1.0](LICENSES/LICENSE_CC0%201.0.txt) |
+| [Swing](https://docs.oracle.com/javase/8/docs/technotes/guides/swing/index.html)          | 桌面端UI框架                                         | 取决于使用的JDK/JRE                                                                                        |
+| [org.wysko.kmidi](https://github.com/wyskoj/kmidi)                                        | 解析MIDI文件数据。                                     | [Apache 2.0](LICENSES/LICENSE_Apache%202.0.txt)                                                      |
+| [Java Sound API](https://docs.oracle.com/javase/8/docs/technotes/guides/sound/index.html) | 将MIDI序列发送至MIDI OUT设备；播放Wave音频；内置合成器方案(Gervill)。 | 取决于使用的JDK/JRE                                                                                        |
+| [org.jjazz.fluidsynthjava](https://github.com/jjazzboss/FluidSynthJava)                   | 内置合成器的方案，将MIDI序列转为Wave音频，由Java Sound API进行播放。   | [LGPL 2.1](LICENSES/LICENSE_LGPL%20v2.1.txt)                                                         |
+| [arrow-kt](https://arrow-kt.io/)                                                          | 提供Either和Tuple类型                                | [Apache 2.0](LICENSES/LICENSE_Apache%202.0.txt)                                                      |
+| [ICU4J](https://icu.unicode.org/home)                                                     | 提供国际化支持                                         | [Unicode License V3](LICENSES/LICENSE_Unicode%20License%20V3.txt)                                    |
+| [Kotlin Reflect](https://kotlinlang.org/)                                                 | Kotlin反射支持                                      | [Apache 2.0](LICENSES/LICENSE_Apache%202.0.txt)                                                      |
 
 以及 Java™ SE 和 Kotlin 的标准库。
 
-对Java发行版的版本要求最低是23。
+对 Java™ SE 版本要求最低是23。
 
 ## `assets`文件夹的说明
 
@@ -61,12 +62,12 @@
 
 请留意每个文件夹下的许可证
 
-| 文件或文件夹                        | 描述                                                                    |
-|:------------------------------|:----------------------------------------------------------------------|
-| [CCLicense](assets/CCLicense) | 存放[Creative Commons](https://creativecommons.org/)的许可证                |
-| [Font](assets/Font)           | 存放字体文件，该项目使用[思源黑体](https://github.com/adobe-fonts/source-han-sans)    |
-| [Musician](assets/Musician)   | 存放角色（演奏席位）的素材                                                         |
-| [ui](assets/ui)               | 使用[gdx-liftoff](https://github.com/libgdx/gdx-liftoff)创建项目时，添加的GUI资源。 |
+| 文件或文件夹                                | 描述                                                                    |
+|:--------------------------------------|:----------------------------------------------------------------------|
+| [DefaultAssets](assets/DefaultAssets) | 存放与GPL许可证兼容的缺省素材                                                      |
+| [Font](assets/Font)                   | 存放字体文件，该项目使用[思源黑体](https://github.com/adobe-fonts/source-han-sans)    |
+| [Musician](assets/Musician)           | 存放角色的素材                                                               |
+| [ui](assets/ui)                       | 使用[gdx-liftoff](https://github.com/libgdx/gdx-liftoff)创建项目时，添加的GUI资源。 |
 
 ## 平台
 

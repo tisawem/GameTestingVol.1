@@ -5,7 +5,7 @@
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
+ *     any later version.
  *
  *     This program is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,8 +22,8 @@ import tisawem.gametesting.vol1.config.CoreConfig
 import tisawem.gametesting.vol1.lwjgl3.config.DesktopConfig
 import tisawem.gametesting.vol1.lwjgl3.file.ExtensionFilter
 import tisawem.gametesting.vol1.lwjgl3.file.FileCheckingMethod
-import tisawem.gametesting.vol1.lwjgl3.i18n.Messages
 import tisawem.gametesting.vol1.lwjgl3.i18n.Messages.getMessages
+import tisawem.gametesting.vol1.lwjgl3.i18n.SupportedLanguage
 import tisawem.gametesting.vol1.lwjgl3.swing.FileLoader.loopingAskUserForFileOrAbandon
 import tisawem.gametesting.vol1.lwjgl3.toolkit.Toolkit
 import java.awt.BorderLayout
@@ -175,12 +175,12 @@ East
     }
 
     private val languageLabel = JLabel(getMessages("Change_Language")).usingGlobalProperties()
-    private val languageBox = JComboBox(Messages.SupportedLanguage.entries.toTypedArray()).apply {
+    private val languageBox = JComboBox(SupportedLanguage.entries.toTypedArray()).apply {
         selectedItem= null
         font = Font(null, Font.PLAIN, 28)
         addActionListener {
             selectedItem?.let {
-                CoreConfig.Language.write((it as Messages.SupportedLanguage).locale.name)
+                CoreConfig.Language.write((it as SupportedLanguage).locale.name)
                 dispose()
                 frame.dispose()
                 HomePage()

@@ -1,0 +1,72 @@
+=========================================================================
+GameTestingVol.1
+
+Version 1.1
+
+Copyright (C) 2020-2025 Tisawem東北項目
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+If the source code is not attached to this software copy,
+it can be obtained from https://github.com/tisawem/GameTestingVol.1
+=========================================================================
+Perform Seat (冯熙)
+
+Copyright (C) 2020-2025 Tisawem東北項目
+
+The Perform Seat (冯熙) character and its assets are licensed
+to this software under the
+Creative Commons Attribution-ShareAlike 4.0 International Public License
+=========================================================================
+This software uses the following libraries and frameworks
+For which express gratitude:
+
+Front End：
+    LibGDX                              Apache 2.0
+    https://libgdx.com/
+
+    KTX                                 CC0 1.0
+    https://libktx.github.io/
+
+    Swing
+    https://docs.oracle.com/javase/8/docs/technotes/guides/swing/
+
+Internationalization：
+    ICU4J                               UNICODE LICENSE V3
+    https://icu.unicode.org/home
+
+MIDI Process：
+    org.wysko:kmidi                     Apache 2.0
+    https://github.com/wyskoj/kMIDI
+
+    org.jjazzlab:fluidsynthjava         LGPL v2.1
+    https://github.com/jjazzboss/FluidSynthJava
+
+    Java Sound API
+    https://docs.oracle.com/javase/8/docs/technotes/guides/sound/
+
+Programming：
+    arrow-kt                            Apache 2.0
+    https://arrow-kt.io/
+
+    Kotlin Reflect                      Apache 2.0
+    https://kotlinlang.org/docs/reflection.html
+
+Standard Libraries：
+    Java™ SE
+    https://www.oracle.com/java/technologies/java-se-glance.html
+
+    Kotlin                              Apache 2.0
+    https://kotlinlang.org/
+=========================================================================

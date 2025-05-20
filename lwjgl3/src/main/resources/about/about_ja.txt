@@ -1,0 +1,71 @@
+=========================================================================
+GameTestingVol.1
+
+バージョン  1.1
+
+Copyright (C) 2020-2025 Tisawem東北項目
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+このソフトウェアのコピーにソースコードが添付されていない場合、
+https://github.com/tisawem/GameTestingVol.1 から入手できます。
+=========================================================================
+Perform Seat (冯熙)
+
+Copyright (C) 2020-2025 Tisawem東北項目
+
+Perform Seat (冯熙) のキャラクターイメージおよびそのリソースは、
+Creative Commons Attribution-ShareAlike 4.0 International Public License
+の下でこのソフトウェアに使用許諾されています。
+=========================================================================
+このソフトウェアは以下のライブラリとフレームワークを使用しており、ここに感謝の意を表します：
+
+フロントエンドフレームワーク：
+    LibGDX                              Apache 2.0
+    https://libgdx.com/
+
+    KTX                                 CC0 1.0
+    https://libktx.github.io/
+
+Swing
+    https://docs.oracle.com/javase/8/docs/technotes/guides/swing/
+
+国際化：
+    ICU4J                               UNICODE LICENSE V3
+    https://icu.unicode.org/home
+
+MIDI処理：
+    org.wysko:kmidi                     Apache 2.0
+    https://github.com/wyskoj/kMIDI
+
+    org.jjazzlab:fluidsynthjava         LGPL v2.1
+    https://github.com/jjazzboss/FluidSynthJava
+
+    Java Sound API
+    https://docs.oracle.com/javase/8/docs/technotes/guides/sound/
+
+プログラミング開発：
+    arrow-kt                            Apache 2.0
+    https://arrow-kt.io/
+
+    Kotlin Reflect                      Apache 2.0
+    https://kotlinlang.org/docs/reflection.html
+
+標準ライブラリ：
+    Java™ SE
+    https://www.oracle.com/java/technologies/java-se-glance.html
+
+    Kotlin                              Apache 2.0
+    https://kotlinlang.org/
+=========================================================================

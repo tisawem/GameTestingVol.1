@@ -1,4 +1,4 @@
-=========================================================================
+=======================================================================
 GameTestingVol.1
 
 バージョン  1.1
@@ -20,15 +20,15 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 このソフトウェアのコピーにソースコードが添付されていない場合、
 https://github.com/tisawem/GameTestingVol.1 から入手できます。
-=========================================================================
-Perform Seat (冯熙)
+=======================================================================
+GameTestingVol.1 Default Musician
 
 Copyright (C) 2020-2025 Tisawem東北項目
 
-Perform Seat (冯熙) のキャラクターイメージおよびそのリソースは、
-Creative Commons Attribution-ShareAlike 4.0 International Public License
-の下でこのソフトウェアに使用許諾されています。
-=========================================================================
+キャラクターデザインおよびその素材は、
+Creative Commons Attribution 4.0 International Public License
+の下で本ソフトウェアでの使用が許可されています。
+=======================================================================
 このソフトウェアは以下のライブラリとフレームワークを使用しており、ここに感謝の意を表します：
 
 フロントエンドフレームワーク：
@@ -38,7 +38,7 @@ Creative Commons Attribution-ShareAlike 4.0 International Public License
     KTX                                 CC0 1.0
     https://libktx.github.io/
 
-Swing
+    Swing
     https://docs.oracle.com/javase/8/docs/technotes/guides/swing/
 
 国際化：
@@ -62,10 +62,17 @@ MIDI処理：
     Kotlin Reflect                      Apache 2.0
     https://kotlinlang.org/docs/reflection.html
 
+ログ
+    Logback Classic Module              EPL 1.0     LGPL 2.1
+    https://logback.qos.ch/
+
+    SLF4J API Module                    MIT
+    http://www.slf4j.org
+
 標準ライブラリ：
     Java™ SE
     https://www.oracle.com/java/technologies/java-se-glance.html
 
     Kotlin                              Apache 2.0
     https://kotlinlang.org/
-=========================================================================
+=======================================================================

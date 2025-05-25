@@ -41,7 +41,7 @@ object MidiDeviceManager {
                     false
                 }
             }
-        }
+        }.ifEmpty { listOf(MidiSystem.getSynthesizer().deviceInfo) } //绝大多数用户的电脑，过滤这些设备后，是没有MIDI输出设备的。
 
     fun getPreferredOutputDevice()=getAvailableMIDIOutputDevices().find { it.name== DesktopConfig.MIDIOutputDevice.load() }
 

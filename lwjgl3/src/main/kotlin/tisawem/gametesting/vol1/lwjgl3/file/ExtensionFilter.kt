@@ -34,7 +34,7 @@ import javax.swing.filechooser.FileNameExtensionFilter
  */
 enum class ExtensionFilter(val filter:()-> FileFilter) {
     MIDIFile("MIDI_File","mid"),
-    SoundFont("SoundFont_File","sf2"),
+    SoundFont("SoundFont_File","sf2","dls"),
     Image("Image_File","jpg","png","bmp"),
     ;
     constructor(messages:String,vararg extensions:String  ):this(

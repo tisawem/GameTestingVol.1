@@ -21,12 +21,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 如果该软件副本没有随附源代码，
 可从 https://github.com/tisawem/GameTestingVol.1 获取。
 =========================================================================
-Perform Seat (冯熙)
+GameTestingVol.1 Default Musician
 
 Copyright (C) 2020-2025 Tisawem東北項目
 
-Perform Seat (冯熙) 人物形象，及其素材，以
-Creative Commons Attribution-ShareAlike 4.0 International Public License
+人物形象，及其素材，以
+Creative Commons Attribution 4.0 International Public License
 授权本软件使用。
 =========================================================================
 本软件使用了以下类库和框架，在此表示感谢：
@@ -38,7 +38,7 @@ Creative Commons Attribution-ShareAlike 4.0 International Public License
     KTX                                 CC0 1.0
     https://libktx.github.io/
 
-Swing
+    Swing
     https://docs.oracle.com/javase/8/docs/technotes/guides/swing/
 
 国际化：
@@ -61,6 +61,13 @@ MIDI处理：
 
     Kotlin Reflect                      Apache 2.0
     https://kotlinlang.org/docs/reflection.html
+
+日志
+    Logback Classic Module              EPL 1.0     LGPL 2.1
+    https://logback.qos.ch/
+
+    SLF4J API Module                    MIT
+    http://www.slf4j.org
 
 标准库：
     Java™ SE

@@ -19,7 +19,6 @@
 package tisawem.gametesting.vol1.lwjgl3.toolkit
 
 
-
 import tisawem.gametesting.vol1.lwjgl3.config.DesktopConfig
 import tisawem.gametesting.vol1.lwjgl3.swing.ExceptionDialog
 import java.awt.Graphics2D
@@ -36,20 +35,20 @@ object Toolkit {
      *
      * If any of the following issues occur, an [tisawem.gametesting.vol1.lwjgl3.swing.ExceptionDialog] is displayed with detailed error information:
      * - A [NumberFormatException] or [IndexOutOfBoundsException] is thrown if the configuration value is not in the correct format or contains invalid numbers.
-     * - A [NoSuchElementException] is thrown if the `WindowedResolution` setting is missing from the `config.properties` file.
      *
      * In case of any exception, the function logs the error, displays the dialog, and returns a default resolution of `1280x720`.
      *
      * @return A [Pair] containing the width and height of the windowed resolution, or a default value of `1280x720` if an error occurs.
      */
-    fun getWindowedResolution()=try {
-       val (x,y)= DesktopConfig.WindowedResolution.load().split('_', ignoreCase = false, limit = 2).map { it.toInt().takeIf { number -> number>0 }?:throw NumberFormatException("范围不对") }
-Pair(x,y)
-    }catch (e: Throwable){
+    fun getWindowedResolution() = try {
+        val (x, y) = DesktopConfig.WindowedResolution.load().split('_', ignoreCase = false, limit = 2)
+            .map { it.toInt().takeIf { number -> number > 0 } ?: throw NumberFormatException("范围不对") }
+        Pair(x, y)
+    } catch (e: Throwable) {
         ExceptionDialog(
             e, true, """
 1、NumberFormatException，IndexOutOfBoundsException：
-    config.properties文件的WindowedResolution设置项，值的文本格式，或者范围不对：
+    config.properties文件的WindowedResolution设置项的值，文本格式，或者范围不对：
         当前设置项的值为：${DesktopConfig.WindowedResolution.load()}
 
     正确格式为 <横向分辨率>_<纵向分辨率> ，值均为正整数。
@@ -58,10 +57,8 @@ Pair(x,y)
 """
         )
 
-        Pair(1280,720)
+        Pair(1280, 720)
     }
-
-
 
 
     /**
@@ -105,8 +102,8 @@ Pair(x,y)
      * @return 缩放后的 BufferedImage
      */
     fun getScaledBufferedImage(image: BufferedImage, scale: Float): BufferedImage {
-        if (scale<=0) {
-            ExceptionDialog(IllegalArgumentException(),true,"图片缩放倍数必须是正数\n该函数返回 $image")
+        if (scale <= 0) {
+            ExceptionDialog(IllegalArgumentException(), true, "图片缩放倍数必须是正数\n该函数返回 $image")
             return image
         }
 
@@ -115,7 +112,8 @@ Pair(x,y)
         val newHeight = (image.height * scale).toInt()
 
         // 创建一个新的 BufferedImage，类型使用原图的类型
-        val scaledImage = BufferedImage(newWidth, newHeight, image.type.takeIf { it != 0 } ?: BufferedImage.TYPE_INT_ARGB)
+        val scaledImage =
+            BufferedImage(newWidth, newHeight, image.type.takeIf { it != 0 } ?: BufferedImage.TYPE_INT_ARGB)
 
         // 获取 Graphics2D
         val g2d: Graphics2D = scaledImage.createGraphics()

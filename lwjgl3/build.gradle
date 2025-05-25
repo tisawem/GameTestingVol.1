@@ -52,6 +52,8 @@ dependencies {
   implementation 'com.ibm.icu:icu4j:77.1'
   implementation 'org.jjazzlab:fluidsynthjava:0.3.2'
   implementation "org.jetbrains.kotlin:kotlin-reflect:2.1.21"
+  implementation 'org.slf4j:slf4j-api:2.0.17'
+  implementation 'ch.qos.logback:logback-classic:1.5.18'
 }
 
 def os = System.properties['os.name'].toLowerCase()

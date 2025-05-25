@@ -18,7 +18,9 @@
 
 package tisawem.gametesting.vol1.lwjgl3.swing
 
+
 import com.badlogic.gdx.Gdx
+import org.slf4j.LoggerFactory
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.Font
@@ -28,49 +30,55 @@ import java.awt.event.WindowFocusListener
 import javax.swing.*
 import kotlin.system.exitProcess
 
-
-class ExceptionDialog (
-     throwable: Throwable,
-    canContinue: Boolean,
+class ExceptionDialog(
+    throwable: Throwable,
+    private val canContinue: Boolean,
     description: String = "",
-    val onExit:()-> Nothing={
+    val onExit: () -> Nothing = {
         try {
             Gdx.app.exit()
-        }catch (_: Throwable){}
+        } catch (_: Throwable) {}
         exitProcess(-1)
     }
-
 ) {
+    companion object {
+        private val logger = LoggerFactory.getLogger(ExceptionDialog::class.java)
+    }
+
     private val dialog = JDialog().apply {
         defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
         isModal = true
         isAlwaysOnTop = true
-        minimumSize= Dimension(640, 480)
+        minimumSize = Dimension(640, 480)
 
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
 
         if (!canContinue) {
             addWindowListener(object : WindowAdapter() {
-                override fun windowClosed(e: WindowEvent) {onExit() }
-                override fun windowClosing(e: WindowEvent) {onExit()}
+                override fun windowClosed(e: WindowEvent) {
+                    logger.info("Exception dialog closed by window event - exiting program")
+                    onExit()
+                }
+                override fun windowClosing(e: WindowEvent) {
+                    logger.info("Exception dialog closing - exiting program")
+                    onExit()
+                }
             })
         }
 
-
-
         // 强制焦点恢复
         addWindowFocusListener(object : WindowFocusListener {
-            override fun windowGainedFocus(e: WindowEvent?) {}
+            override fun windowGainedFocus(e: WindowEvent?) {
+                logger.debug("Dialog gained focus")
+            }
             override fun windowLostFocus(e: WindowEvent?) {
+                logger.debug("Dialog lost focus, attempting to regain")
                 SwingUtilities.invokeLater {
                     toFront()
                     requestFocus()
                 }
             }
         })
-
-
-
     }
 
     private val messageLabel = JLabel(
@@ -97,6 +105,8 @@ class ExceptionDialog (
             ).apply {
                 font = Font(null, Font.PLAIN, 16)
                 addActionListener {
+                    logger.info("User chose to continue using the program")
+                    logger.debug("Closing exception dialog after user chose to continue")
                     dialog.dispose()
                 }
             }
@@ -113,7 +123,10 @@ class ExceptionDialog (
             """.trimIndent()
         ).apply {
             font = Font(null, Font.PLAIN, 16)
-            addActionListener { onExit()}
+            addActionListener {
+                logger.info("User chose to exit the program")
+                onExit()
+            }
         }
         add(exitButton)
     }
@@ -137,23 +150,36 @@ class ExceptionDialog (
     }
 
     init {
-      throwable.printStackTrace()
+        // 记录异常信息
+        logger.error("Creating exception dialog - canContinue: $canContinue", throwable)
+        if (description.isNotBlank()) {
+            logger.error("Error description: $description")
+        }
+
+        // 同时输出到标准错误流（保留原有行为）
+        throwable.printStackTrace()
 
         dialog.apply {
             contentPane = panel
             pack()
             setLocationRelativeTo(null)
 
-          try {
-              Gdx.graphics.setWindowedMode(size.width,size.height)
-          }catch (_: Throwable){}
+            try {
+                logger.debug("Attempting to set windowed mode to ${size.width}x${size.height}")
+                Gdx.graphics.setWindowedMode(size.width, size.height)
+            } catch (e: Throwable) {
+                logger.warn("Failed to set windowed mode", e)
+            }
+
+            logger.info("Showing exception dialog")
             isVisible = true
 
             SwingUtilities.invokeLater {
                 toFront()
                 requestFocus()
+                logger.debug("Dialog brought to front and focused")
             }
         }
     }
-
 }
+

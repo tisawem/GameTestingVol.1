@@ -37,7 +37,7 @@ object CoreConfigOperation {
     /**
      * 该字段由平台特定实现进行初始化
      *
-     *      lwjgl3 -> tisawem/gametesting/vol1/lwjgl3/config/DesktopConfig.kt
+     *      lwjgl3 -> tisawem/gametesting/vol1/lwjgl3/config/Lwjgl3Launcher.kt
      */
       var configProperties: Properties?=null
 

@@ -1,4 +1,4 @@
-=========================================================================
+======================================================================
 GameTestingVol.1
 
 Version 1.1
@@ -20,15 +20,15 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 If the source code is not attached to this software copy,
 it can be obtained from https://github.com/tisawem/GameTestingVol.1
-=========================================================================
-Perform Seat (冯熙)
+======================================================================
+GameTestingVol.1 Default Musician
 
 Copyright (C) 2020-2025 Tisawem東北項目
 
-The Perform Seat (冯熙) character and its assets are licensed
-to this software under the
-Creative Commons Attribution-ShareAlike 4.0 International Public License
-=========================================================================
+Character designs and their materials are licensed for use in
+this software under the
+Creative Commons Attribution 4.0 International Public License.
+======================================================================
 This software uses the following libraries and frameworks
 For which express gratitude:
 
@@ -63,10 +63,17 @@ Programming：
     Kotlin Reflect                      Apache 2.0
     https://kotlinlang.org/docs/reflection.html
 
+Log
+    Logback Classic Module              EPL 1.0     LGPL 2.1
+    https://logback.qos.ch/
+
+    SLF4J API Module                    MIT
+    http://www.slf4j.org
+
 Standard Libraries：
     Java™ SE
     https://www.oracle.com/java/technologies/java-se-glance.html
 
     Kotlin                              Apache 2.0
     https://kotlinlang.org/
-=========================================================================
+======================================================================

@@ -157,14 +157,20 @@ class Play(frame: JFrame) : JDialog(frame, true) {
                     it.addScreen<Perform>(Perform(it))
                     it.setScreen<Perform>()
                 }, Lwjgl3ApplicationConfiguration().apply {
-                    title = "GameTestingVol.1  ${DesktopConfig.MIDIFile.load()}"
+
                     if (DesktopConfig.FullScreen.load().toBoolean()) {
                         setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode())
                     } else {
                         val (w, h) = Toolkit.getWindowedResolution()
                         setWindowedMode(w, h)
+
                     }
 
+                    useVsync(true)
+                    setForegroundFPS(Lwjgl3ApplicationConfiguration.getDisplayMode().refreshRate+1)
+
+                    setWindowIcon(*(shortArrayOf(128,64,32,16).map { "icon/icon$it.png" }.toTypedArray()))
+                    title = "GameTestingVol.1  ${DesktopConfig.MIDIFile.load()}"
                 })
             } catch (e: Throwable) {
                 ExceptionDialog(e, true, "未知错误\n可以尝试再播放一遍。")

@@ -26,6 +26,7 @@ import tisawem.gametesting.vol1.lwjgl3.swing.FileLoader.loopingAskUserForFileOrA
 import java.awt.BorderLayout
 import java.awt.Font
 import java.awt.GridLayout
+import javax.imageio.ImageIO
 import javax.swing.*
 
 class HomePage( ) : JFrame("GameTestingVol.1 ${getMessages("HomePage")}") {
@@ -33,6 +34,8 @@ class HomePage( ) : JFrame("GameTestingVol.1 ${getMessages("HomePage")}") {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
 
         defaultCloseOperation =EXIT_ON_CLOSE
+        //设置程序在任务栏及窗口左上角的Logo
+        iconImages= try{shortArrayOf(16,32,64,128).map { ImageIO.read(HomePage::class.java.classLoader.getResourceAsStream("icon/icon$it.png")) } }catch (_: Throwable){null}
 
     }
 
@@ -62,7 +65,7 @@ class HomePage( ) : JFrame("GameTestingVol.1 ${getMessages("HomePage")}") {
             return this
         }
 
-const val SOFTWARE_VERSION="1.1  git-c8d4ce5c"
+const val SOFTWARE_VERSION="1.1  git-2122722"
       }
 /*
 ---------------------North

@@ -20,6 +20,7 @@ package tisawem.gametesting.vol1.gdx.musician
 
 
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -37,7 +38,7 @@ import kotlin.time.toDuration
 class Renkween(
     override val timeBasedSequence: TimeBasedSequence,//如果不响应其他MIDI事件，这个形参暂无用处
     override val score: Score, override val getPosition: () -> Duration
-) : Musician,Actor(), Disposable{
+) : Musician,Actor(){
     override fun getActor()=this
 
 
@@ -46,7 +47,7 @@ class Renkween(
         const val PICTURE_HEIGHT = 768f
         const val IMAGE_BASE_DIRECTORY = "Musician/Renkween"
         //音符最少演奏时长
-        val LEAST_PERFORM_LENGTH =0.08.toDuration(DurationUnit.SECONDS)
+        fun getLeastPerformLength() = (Gdx.graphics.deltaTime.toDouble()*2).toDuration(DurationUnit.SECONDS)
 
         // 钢琴的有效音符范围
         const val MIN_NOTE = 21
@@ -64,7 +65,7 @@ class Renkween(
     // 为了避免重复加载，从 track.arcs 中提取所有音高，加载 body 与 pointer 图片
     private val noteTextures = mutableMapOf<Byte, Pair<Texture, Texture>>().apply {
         score.arcs
-            .asSequence()
+
             .map { it.note }
             .filter { it in MIN_NOTE..MAX_NOTE }
             .toSet()
@@ -112,13 +113,13 @@ class Renkween(
         while (activeArcs.isNotEmpty()) {
             val arc = activeArcs.peek()
 
-            // Calculate the minimum end time based on note start time plus minimum duration
-            val minimumEndTick = arc.startTime + LEAST_PERFORM_LENGTH
+            // Calculate the end time
+            val endTime = maxOf(arc.startTime + getLeastPerformLength(),arc.endTime)
 
             // Only remove the note if:
             // 1. It has actually ended (currentTick passed its end)
             // 2. It has played for at least the minimum duration
-            if (getPosition() <= arc.endTime || getPosition() < minimumEndTick) {
+            if (getPosition() <= endTime) {
                 break // Don't remove this note or any others yet
             }
 

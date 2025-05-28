@@ -33,6 +33,7 @@ class PlayFluidSynthConvertedWaveFile(
 
     // 使用FutureTask来异步生成WAV文件
     private val wavFile: FutureTask<File> = FutureTask<File> {
+        //临时文件的名字最好是ASCII字符的名字，碰到过因非ASCII文件名导致的一些问题。
         File.createTempFile( "GameTestingVol1_", ".wav").let {
             it.deleteOnExit()
             FluidSynthJava().apply {

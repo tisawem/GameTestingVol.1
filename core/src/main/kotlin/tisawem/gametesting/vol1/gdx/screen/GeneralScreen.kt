@@ -36,7 +36,7 @@ import kotlin.math.min
  */
 abstract  class GeneralScreen (): KtxScreen{
    val batch= SpriteBatch()
-    val viewport= FitViewport(3840f,2160f)
+    val viewport= FitViewport(Gdx.graphics.displayMode.width.toFloat(),Gdx.graphics.displayMode.height.toFloat())
 
 
     val backgroundTexture  = try {

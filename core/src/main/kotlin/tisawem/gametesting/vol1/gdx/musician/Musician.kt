@@ -19,11 +19,12 @@
 package tisawem.gametesting.vol1.gdx.musician
 
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.utils.Disposable
 import org.wysko.kmidi.midi.TimeBasedSequence
 import tisawem.gametesting.vol1.midi.Score
 import kotlin.time.Duration
 
-  interface Musician {
+  interface Musician: Disposable {
 
     /**
      * 提供一个Actor，在演奏画面上展示
@@ -43,7 +44,7 @@ import kotlin.time.Duration
     val timeBasedSequence: TimeBasedSequence
 
     /**
-     *谱子，提供了音高事件，所有MIDI事件，和乐器变更事件
+     *谱子，提供了[org.wysko.kmidi.midi.TimedArc]事件，所有MIDI事件，和乐器变更事件
      */
     val score: Score
 

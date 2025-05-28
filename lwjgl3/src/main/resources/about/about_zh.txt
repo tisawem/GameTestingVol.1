@@ -25,7 +25,7 @@ GameTestingVol.1 Default Musician
 
 Copyright (C) 2020-2025 Tisawem東北項目
 
-人物形象，及其素材，以
+人物形象，及素材，以
 Creative Commons Attribution 4.0 International Public License
 授权本软件使用。
 =========================================================================

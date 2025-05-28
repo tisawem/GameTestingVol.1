@@ -109,17 +109,12 @@ class InstrumentLayout : WidgetGroup() {
 }
 class OverlayInstrumentLayout : WidgetGroup() {
     private val melodicSection = InstrumentLayout()
-    private val percussionGroup = HorizontalGroup()
+
 
     init {
         // 将钢琴键盘部分设置为填满父容器
         melodicSection.setFillParent(true)
         addActor(melodicSection)
-//
-//        // 配置打击乐器组 - 水平排列
-//        percussionGroup.space(20f)
-        percussionGroup.center()
-        addActor(percussionGroup)
     }
 
     /**
@@ -129,20 +124,6 @@ class OverlayInstrumentLayout : WidgetGroup() {
         melodicSection.setInstruments(instruments)
     }
 
-    /**
-     * 设置打击乐器，缩小并放置在叠加层
-     */
-    fun setPercussionInstruments(instruments: List<Actor>) {
-        percussionGroup.clear()
-        instruments.forEach { instrument ->
-            // 缩小打击乐器到适当大小
-            instrument.setScale(0.35f)
-            percussionGroup.addActor(instrument)
-        }
-
-        // 重新计算打击乐器组的大小和位置
-        percussionGroup.pack()
-    }
 
     override fun layout() {
         super.layout()
@@ -151,11 +132,6 @@ class OverlayInstrumentLayout : WidgetGroup() {
         melodicSection.setSize(width, height)
         melodicSection.validate()
 
-        // 打击乐器组放在右上角
-        percussionGroup.pack()
-        percussionGroup.setPosition(
-            (width - percussionGroup.width) / 2,  // 右边距20
-            0f
-        )
+
     }
 }

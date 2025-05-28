@@ -25,21 +25,17 @@ import tisawem.gametesting.vol1.midi.Score
 import kotlin.time.Duration
 
 enum class GeneralMusicians (val instrument: Instrument,val musician:( TimeBasedSequence,Score,()-> Duration)-> Musician){
- RENKWEEN(Instrument(0,0,0),{ t, s, p-> Renkween(t,s,p) }),
+  //RENKWEEN(Instrument(0,0,0),{ t, s, p-> Renkween(t,s,p) }),
 
-    XUANKONG(Instrument(0,0,1),{ t , s , p->
-        XuanKong(
-              t,
-              s,
-              p
-          )
-    });
+//XUANKONG(Instrument(0,0,1),{ t , s , p-> XuanKong(t, s, p) }),
+    DefaultMusicianGeneral(Instrument(0,0,0),{t,s,p->DefaultMusicianGeneral(t,s,p)}),
+    ;
 
 
 }
 enum class PercussionMusicians (val instrument: Instrument,val musician:( TimeBasedSequence,Score,()-> Duration)-> Musician){
-QINGXUE(InstrumentStandard.defaultPercussion,{t,s,p-> QingXue(t,s,p) })
-
+//QINGXUE(InstrumentStandard.defaultPercussion,{t,s,p-> QingXue(t,s,p) }),
+DefaultMusicianPercussion(InstrumentStandard.defaultPercussion,{t,s,p-> DefaultMusicianPercussion(t,s,p) })
  ;
 
 

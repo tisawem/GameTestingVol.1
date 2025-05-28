@@ -48,17 +48,27 @@ class ProcessedMIDIData(kStdMidiFile: StandardMidiFile) {
 
 
     /**
-     * 按照[MidiEvent.channel]值，重新归类所有的[MidiEvent]，组成新的[StandardMidiFile.Track]集合
-     *
-     * 它不包含任何[MetaEvent]
+     * 只包含任何[MidiEvent]的[StandardMidiFile.Track]集合
      */
-    private val channelSortedMidiEventsTracks = kStdMidiFile.tracks
-        .flatMap { track -> track.events.filterIsInstance<MidiEvent>() }//汇集所有的MidiEvent
-        .groupBy { it.channel }//组成Map<Channel值, MidiEvent列表>
-        .filter { (_, events) -> events.isNotEmpty() }//筛掉没有事件的通道
-        .toSortedMap() // 按通道号排序
-        .map { (_, events) -> StandardMidiFile.Track(events.sortedBy { it.tick }) }//按顺序转成List<List<Event>>，且根据tick值排序List<Event>
+    private val midiEventsTracks =if (kStdMidiFile.header.format!= StandardMidiFile.Header.Format.Format1){
+        //SMF 0跳到这个分支
 
+        kStdMidiFile.tracks
+            .flatMap { track -> track.events.filterIsInstance<MidiEvent>() }//汇集所有的MidiEvent
+            .groupBy { it.channel }//组成Map<Channel值, MidiEvent列表>
+            .filter { (_, events) -> events.isNotEmpty() }//筛掉没有事件的通道
+            .toSortedMap() // 按通道号排序
+            .map { (_, events) -> StandardMidiFile.Track(events.sortedBy { it.tick }) }//按顺序转成List<List<Event>>，且根据tick值排序List<Event>
+
+    }else{
+        //SMF 1跳到该分支，只需要过滤空轨道即可
+
+        val newTrack= ArrayDeque<StandardMidiFile.Track>()
+        kStdMidiFile.tracks.filterNot { it.arcs.isEmpty() } .forEach {
+         newTrack.add(StandardMidiFile.Track( it.events.filterIsInstance<MidiEvent>().sortedBy { e->e.tick }))
+        }
+newTrack
+    }
 
     /**
      * 基于时间轴的序列
@@ -120,7 +130,7 @@ class ProcessedMIDIData(kStdMidiFile: StandardMidiFile) {
     /**
      * Process each channel track into appropriate music collections.
      */
-    private fun initSeatsMusic() =channelSortedMidiEventsTracks.forEach { track ->
+    private fun initSeatsMusic() =midiEventsTracks.forEach { track ->
         val instrumentStandard = InstrumentStandard( (track.events.first() as MidiEvent).channel)
 
         // Extract instrument changes

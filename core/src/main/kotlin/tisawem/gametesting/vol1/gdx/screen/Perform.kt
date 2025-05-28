@@ -21,11 +21,15 @@ package tisawem.gametesting.vol1.gdx.screen
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputAdapter
-import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.utils.viewport.FitViewport
+import ktx.actors.centerPosition
+import ktx.assets.disposeSafely
 import tisawem.gametesting.vol1.config.CoreConfig
 import tisawem.gametesting.vol1.gdx.Game
 import tisawem.gametesting.vol1.gdx.OverlayInstrumentLayout
 import tisawem.gametesting.vol1.gdx.musician.AllocateMusicianFunctions
+import tisawem.gametesting.vol1.gdx.musician.Musician
 import tisawem.gametesting.vol1.midi.InstrumentStandard
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
@@ -36,11 +40,12 @@ import kotlin.time.toDuration
  */
 class Perform(private val gameInstance: Game) : GeneralScreen() {
 
-
     /**
      * 布局
      */
-    private val layout = OverlayInstrumentLayout()
+    private val generalLayout = OverlayInstrumentLayout()
+
+    private val percussionLayout= OverlayInstrumentLayout()
 
     /**
      * 提前演奏的时间
@@ -83,8 +88,8 @@ class Perform(private val gameInstance: Game) : GeneralScreen() {
      */
     private var played=false
 
-    private val generalActors= ArrayDeque<Actor>()
-    private val percussionActors= ArrayDeque<Actor>()
+    private val generalActors= ArrayDeque<Musician>()
+    private val percussionActors= ArrayDeque<Musician>()
 
     init {
         Gdx.input.inputProcessor = object : InputAdapter() {
@@ -106,8 +111,8 @@ Gdx.app.exit()
                 //分配Actor
                 AllocateMusicianFunctions.RANDOM.allocate(instrumentChange)?.let { musician->
                    when( score.arcs.first().channel){
-                       InstrumentStandard.PERCUSSION_CHANNEL->percussionActors.add(musician(gameInstance.bridge.timedBaseSequence,score) { getCurrentPosition() }.getActor())
-                   else -> generalActors.add(musician(gameInstance.bridge.timedBaseSequence,score) { getCurrentPosition() }.getActor())
+                       InstrumentStandard.PERCUSSION_CHANNEL->percussionActors.add(musician(gameInstance.bridge.timedBaseSequence,score) { getCurrentPosition() })
+                   else -> generalActors.add(musician(gameInstance.bridge.timedBaseSequence,score) { getCurrentPosition() } )
 
                    }
 
@@ -117,9 +122,17 @@ Gdx.app.exit()
 
             }
 
-        layout.apply {
-            setMelodicInstruments(generalActors)
-            setPercussionInstruments(percussionActors)
+        generalLayout.apply {
+            setMelodicInstruments(generalActors.map { it.getActor() })
+
+            this@Perform.stage .addActor(this)
+            setFillParent(true)
+        }
+
+        percussionLayout.apply {
+            setMelodicInstruments(percussionActors.map { it.getActor() })
+             setScale(0.5f)
+            centerPosition(viewport.worldWidth/2,0f)
             this@Perform.stage .addActor(this)
             setFillParent(true)
         }
@@ -148,7 +161,9 @@ gameInstance.bridge.play()
 
     override fun dispose() {
         super.dispose()
-gameInstance.bridge.stop()
+        generalActors.forEach { it.disposeSafely()}
+        percussionActors.forEach { it.disposeSafely() }
+        gameInstance.bridge.stop()
     }
 }
 

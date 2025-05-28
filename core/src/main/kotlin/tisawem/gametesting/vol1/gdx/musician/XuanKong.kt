@@ -19,6 +19,7 @@
 package tisawem.gametesting.vol1.gdx.musician
 
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -39,13 +40,13 @@ class XuanKong(
     override val score: Score,
     override val getPosition: () -> Duration
 
-) : Actor(), Disposable, Musician {
+) : Actor(), Musician {
     companion object {
         const val PICTURE_WEIGHT = 945f
         const val PICTURE_HEIGHT = 945f
         const val IMAGE_BASE_DIRECTORY = "Musician/XuanKong"
         //音符最少演奏时长
-        val LEAST_PERFORM_LENGTH =0.08.toDuration(DurationUnit.SECONDS)
+        fun getLeastPerformLength() = (Gdx.graphics.deltaTime.toDouble()*2).toDuration(DurationUnit.SECONDS)
 
         //有效音符范围 (钢琴音高范围)
         val RIGHT_LEG_RANGE = Pair(21, 42)
@@ -166,7 +167,7 @@ class XuanKong(
             val arc = activeArcs.peek()
 
             // 计算基于音符开始时间加上最小持续时间的最小结束时间
-            val minimumEndTime = arc.startTime + LEAST_PERFORM_LENGTH
+            val minimumEndTime = arc.startTime + getLeastPerformLength()
 
             // 只有当以下两个条件都满足时才移除音符：
             // 1. 音符实际已经结束（currentTick 超过了其结束时间）

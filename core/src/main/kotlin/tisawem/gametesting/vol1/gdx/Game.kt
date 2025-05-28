@@ -18,6 +18,7 @@
 
 package tisawem.gametesting.vol1.gdx
 
+import com.kotcrab.vis.ui.VisUI
 import ktx.app.KtxGame
 import tisawem.gametesting.vol1.Bridge
 import tisawem.gametesting.vol1.gdx.screen.GeneralScreen

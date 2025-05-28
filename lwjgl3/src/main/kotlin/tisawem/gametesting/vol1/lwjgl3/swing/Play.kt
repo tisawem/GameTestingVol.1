@@ -179,6 +179,7 @@ class Play(frame: JFrame) : JDialog(frame, true) {
             add(mainPanel)
             pack()
             minimumSize = Dimension(size.width, size.height * 2)
+            setLocationRelativeTo(frame)
             isVisible = true
         }
     }

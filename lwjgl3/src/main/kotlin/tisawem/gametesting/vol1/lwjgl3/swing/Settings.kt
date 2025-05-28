@@ -104,7 +104,7 @@ class Settings(frame: JFrame ) : JDialog(frame, getMessages("Settings"), true) {
                     currentImage.changeLabelIcon(image, scale).text = null
                   this@Settings.minimumSize = Dimension(this@Settings.size.width,480)
 
-                } catch (_: Throwable) { /* 空着，不显示 */}
+                } catch (_: Throwable) { currentImage.icon=null}
             }
 
         }
@@ -263,7 +263,7 @@ East
 
 
         } catch (_: Throwable) {
-          //空着，不显示
+         currentImage.icon=null
         }
 
 //调整最小的窗口大小，高度480完美，宽度根据调整后的窗口规定。

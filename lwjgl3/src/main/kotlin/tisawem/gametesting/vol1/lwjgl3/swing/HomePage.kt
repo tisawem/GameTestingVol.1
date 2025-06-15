@@ -65,7 +65,7 @@ class HomePage( ) : JFrame("GameTestingVol.1 ${getMessages("HomePage")}") {
             return this
         }
 
-const val SOFTWARE_VERSION="1.1  git-2122722"
+const val SOFTWARE_VERSION="1.1  git-99a042bc"
       }
 /*
 ---------------------North

@@ -20,6 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 このソフトウェアのコピーにソースコードが添付されていない場合、
 https://github.com/tisawem/GameTestingVol.1 から入手できます。
+
 =======================================================================
 GameTestingVol.1 Default Musician
 
@@ -28,6 +29,12 @@ Copyright (C) 2020-2025 Tisawem東北項目
 キャラクターデザインおよびその素材は、
 Creative Commons Attribution 4.0 International Public License
 の下で本ソフトウェアでの使用が許可されています。
+
+
+このライセンスの詳細については、
+https://creativecommons.org/licenses/by/4.0/deed.en
+をご覧ください。
+
 =======================================================================
 このソフトウェアは以下のライブラリとフレームワークを使用しており、ここに感謝の意を表します：
 

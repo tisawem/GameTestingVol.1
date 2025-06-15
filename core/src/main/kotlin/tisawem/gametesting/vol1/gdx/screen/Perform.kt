@@ -21,8 +21,6 @@ package tisawem.gametesting.vol1.gdx.screen
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputAdapter
-import com.badlogic.gdx.scenes.scene2d.Stage
-import com.badlogic.gdx.utils.viewport.FitViewport
 import ktx.actors.centerPosition
 import ktx.assets.disposeSafely
 import tisawem.gametesting.vol1.config.CoreConfig
@@ -65,7 +63,7 @@ class Perform(private val gameInstance: Game) : GeneralScreen() {
      *
      * 单位：秒
      */
-    private val sequenceLength = gameInstance.bridge.timedBaseSequence.duration.toDouble(DurationUnit.SECONDS).toFloat()
+    private val sequenceLength = (gameInstance.bridge.timedBaseSequence.duration+advancedTime).toDouble(DurationUnit.SECONDS).toFloat()
 
     /**
      * 内部计数器，以免播放器卡死永远不会退出
